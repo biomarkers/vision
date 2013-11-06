@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
       CvScalar avg = sample_slide(frame);
 
 #ifdef DEBUG_MODE
-      printf("%f,%f,%f,%f\n", sec,avg.val[0], avg.val[1], avg.val[2]);
+      printf("%f,%f,%f,%f\n", sec, avg.val[0], avg.val[1], avg.val[2]);
 #endif
 
       cvShowImage("img_win", frame);
