@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     }
 
     char key = cvWaitKey(30);
-    if(key && key == 27) {
+    if(key == 27) {
       break;
     }
   }
