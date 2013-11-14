@@ -3,10 +3,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <cv.h>
-#include <highgui.h>
-
-#define DEBUG_MODE true
+#define DEBUG_MODE
 #define FRAME_SKIP 10
 
 /*
@@ -55,10 +52,10 @@ int main(int argc, char **argv) {
     bool got_frame = skip_n_frames(cap, FRAME_SKIP, &frame);
 
     if(got_frame) {
-      double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
       cv::Scalar avg = sample_slide(frame);
 
 #ifdef DEBUG_MODE
+      double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
       printf("%f,%f,%f,%f\n", sec, avg.val[0], avg.val[1], avg.val[2]);
 #endif
 
