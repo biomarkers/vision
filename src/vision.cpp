@@ -10,9 +10,9 @@
  * Skip n frames returning the n+1 frame. Returns NULL if no frames are
  * available.
  */
-bool skip_n_frames(cv::VideoCapture capture, int n, cv::Mat *image) {
+bool skipNFrames(cv::VideoCapture capture, int n, cv::Mat *image) {
   for(int i = 0; i < n + 1; i++) {
-    if(capture.read(*image) == false) {
+    if(!capture.read(*image)) {
       return false;
     }
   }
@@ -24,14 +24,14 @@ bool skip_n_frames(cv::VideoCapture capture, int n, cv::Mat *image) {
  * Take a color average of a slide, masking out the area we are not interested
  * in.
  */
-cv::Scalar sample_slide(cv::Mat frame) {
+cv::Scalar sampleSlide(cv::Mat frame) {
   cv::Mat roi(frame.size(), CV_8U);
-  cv::circle(roi, cv::Point(680, 370), 70, cv::Scalar(1), -1, 8, 0);
+  cv::circle(roi, cv::Point(680, 370), 70, cv::Scalar(255), -1, 8, 0);
 
   cv::Scalar avg = cv::mean(frame, roi);
 
 #ifdef DEBUG_MODE
-  cv::circle(frame, cv::Point(680, 370), 70, cv::Scalar(255), 1, 8, 0);
+  cv::circle(frame, cv::Point(680, 370), 70, cv::Scalar(255, 0, 0), 1, 8, 0);
 #endif
 
   return avg;
@@ -47,12 +47,15 @@ int main(int argc, char **argv) {
 
   cv::VideoCapture cap(argv[1]);
 
+  std::vector<cv::Scalar> avgs;
+
   cv::Mat frame;
   while(true) {
-    bool got_frame = skip_n_frames(cap, FRAME_SKIP, &frame);
+    bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
 
     if(got_frame) {
-      cv::Scalar avg = sample_slide(frame);
+      cv::Scalar avg = sampleSlide(frame);
+      avgs.push_back(avg);
 
 #ifdef DEBUG_MODE
       double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
