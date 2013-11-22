@@ -1,0 +1,1 @@
+gcc -std=c99 -I D:\Dropbox\opencv\build\include\opencv -I D:\Dropbox\opencv\build\include -L D:\Dropbox\OpenCV\build\x86\mingw\lib vision.c -lopencv_cor246 -lopencv_imgproc246 -lopencv_highgui246
