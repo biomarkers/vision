@@ -11,7 +11,7 @@
 #define HOUGH_HIGH 218
 #define HOUGH_LOW 100
 
-void BiomarkerImageProcessor::process(cv::Mat frame) {
+cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
   cv::Vec3f sampleCircle = this->findSampleCircle(frame);
   cv::Scalar sample = this->sampleSlide(frame, sampleCircle);
 
@@ -21,6 +21,8 @@ void BiomarkerImageProcessor::process(cv::Mat frame) {
   // double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
   // printf("%f,%f,%f,%f\n", sec, avg.val[0], avg.val[1], avg.val[2]);
 #endif
+
+  return sample;
 }
 
 /*
@@ -102,7 +104,8 @@ int main(int argc, char **argv) {
     bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
 
     if(got_frame) {
-      processor.process(frame);
+      cv::Scalar sample = processor.process(frame);
+      std::cout << sample << std::endl;
 
       cv::imshow("img_win", frame);
     } else {
@@ -118,48 +121,3 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-
-/*
-int main(int argc, char **argv) {
-  if(argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " [file_name]" << std::endl;
-    return 0;
-  }
-
-  cv::namedWindow("img_win", CV_WINDOW_AUTOSIZE);
-
-  cv::VideoCapture cap(argv[1]);
-
-  std::vector<cv::Scalar> avgs;
-
-  cv::Mat frame;
-  skipNFrames(cap, 8730, &frame);
-  while(true) {
-    bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
-
-    if(got_frame) {
-      cv::Vec3f sampleCircle = findSampleCircle(frame);
-      cv::Scalar avg = sampleSlide(frame, sampleCircle);
-
-      avgs.push_back(avg);
-
-#ifdef DEBUG_MODE
-      double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
-      printf("%f,%f,%f,%f\n", sec, avg.val[0], avg.val[1], avg.val[2]);
-#endif
-
-      cv::imshow("img_win", frame);
-    } else {
-      fprintf(stderr, "No frame...\n");
-      break;
-    }
-
-    char key = cvWaitKey(1);
-    if(key == 27) {
-      break;
-    }
-  }
-
-  return 0;
-}
-*/

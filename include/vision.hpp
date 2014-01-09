@@ -1,7 +1,7 @@
 class BiomarkerImageProcessor {
   std::vector<cv::Scalar> samples;
 public:
-  void process(cv::Mat frame);
+  cv::Scalar process(cv::Mat frame);
   std::vector<cv::Scalar> getSamples() { return samples; }
 private:
   cv::Vec3f findSampleCircle(cv::Mat frame);
