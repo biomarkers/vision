@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <iostream>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -16,11 +15,6 @@ cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
   cv::Scalar sample = this->sampleSlide(frame, sampleCircle);
 
   samples.push_back(sample);
-
-#ifdef DEBUG_MODE
-  // double sec = cap.get(CV_CAP_PROP_POS_MSEC) / 1000;
-  // printf("%f,%f,%f,%f\n", sec, avg.val[0], avg.val[1], avg.val[2]);
-#endif
 
   return sample;
 }
@@ -109,7 +103,7 @@ int main(int argc, char **argv) {
 
       cv::imshow("img_win", frame);
     } else {
-      fprintf(stderr, "No frame...\n");
+      std::cerr << "No frame..." << std::endl;
       break;
     }
 
