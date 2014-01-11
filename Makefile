@@ -1,5 +1,9 @@
+CXX=clang++
+CXXFLAGS=-O2 -Iinclude
+LDFLAGS=`pkg-config --cflags opencv` `pkg-config --libs opencv`
+
 default:
-	g++ -Iinclude `pkg-config --cflags opencv` -o vision src/vision.cpp `pkg-config --libs opencv`
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o vision src/vision.cpp
 regr:
-	g++ -Iinclude `pkg-config --cflags opencv` -o regression src/regression.cpp `pkg-config --libs opencv`
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o regression src/regression.cpp
 
