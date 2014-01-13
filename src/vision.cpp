@@ -52,13 +52,13 @@ cv::Vec3f BiomarkerImageProcessor::findSampleCircle(cv::Mat frame) {
  * in.
  */
 cv::Scalar BiomarkerImageProcessor::sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle) {
-  cv::Mat roi(frame.size(), CV_8U);
+  cv::Mat roi(frame.size(), CV_8U, cv::Scalar(0));
   cv::Point center(cvRound(sampleCircle[0]), cvRound(sampleCircle[1]));
 
-  cv::Scalar avg = cv::mean(frame, roi);
-
   int radius = cvRound(sampleCircle[2]);
-  cv::circle(roi, center, radius, cv::Scalar(255), -1, 8, 0);
+  cv::circle(roi, center, radius, cv::Scalar(1), -1, 8, 0);
+
+  cv::Scalar avg = cv::mean(frame, roi);
 
 #ifdef DEBUG_MODE
   cv::circle(frame, center, radius, cv::Scalar(255, 0, 0), 1, 8, 0);
