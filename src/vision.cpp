@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
 
     if(got_frame) {
       cv::Scalar sample = processor.process(frame);
-      std::cout << sample << std::endl;
+      std::cout << sample[0] << "," << sample[1] << "," << sample[2] << "," << sample[3] << std::endl;
 
       cv::imshow("img_win", frame);
     } else {
