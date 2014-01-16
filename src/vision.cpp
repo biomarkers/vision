@@ -10,9 +10,24 @@
 #define HOUGH_HIGH 218
 #define HOUGH_LOW 100
 
+// #define CIRCLE_DETECTION
+
+BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
+}
+
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
+#ifdef CIRCLE_DETECTION
   cv::Vec3f sampleCircle = this->findSampleCircle(frame);
+#else
+  cv::Vec3f sampleCircle = cv::Vec3f(675.0, 375.0, 75.0);
+#endif
+
+#ifdef DEBUG_MODE
+  cv::circle(frame, cv::Point(sampleCircle[0], sampleCircle[1]), sampleCircle[2], cv::Scalar(255, 0, 0), 1, 8, 0);
+#endif
+
   cv::Scalar sample = this->sampleSlide(frame, sampleCircle);
+  sample[3] = (float) frameCounter++;
 
   samples.push_back(sample);
 
@@ -60,10 +75,6 @@ cv::Scalar BiomarkerImageProcessor::sampleSlide(cv::Mat frame, cv::Vec3f sampleC
 
   cv::Scalar avg = cv::mean(frame, roi);
 
-#ifdef DEBUG_MODE
-  cv::circle(frame, center, radius, cv::Scalar(255, 0, 0), 1, 8, 0);
-#endif
-
   return avg;
 }
 
@@ -93,7 +104,7 @@ int main(int argc, char **argv) {
   cv::VideoCapture cap(argv[1]);
 
   cv::Mat frame;
-  skipNFrames(cap, 8730, &frame);
+  // skipNFrames(cap, 8730, &frame);
   while(true) {
     bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
 
