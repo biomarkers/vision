@@ -8,8 +8,17 @@
 #define FRAME_SKIP 10
 
 #define HOUGH_HIGH 218
-#define HOUGH_LOW 100
+#define HOUGH_LOW  100
 
+/* Predefined circle locations to use when circle detection is disabled.
+ */
+#define CIRCLE_CENTER_X      675.0
+#define CIRCLE_CENTER_Y      375.0
+#define CIRCLE_CENTER_RADIUS 75.0
+
+/* Enable or disable circle detection. Will use predefined values above if
+ * disabled.
+ */
 // #define CIRCLE_DETECTION
 
 BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
@@ -21,7 +30,7 @@ cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
 #ifdef CIRCLE_DETECTION
   cv::Vec3f sampleCircle = this->findSampleCircle(frame);
 #else
-  cv::Vec3f sampleCircle = cv::Vec3f(675.0, 375.0, 75.0);
+  cv::Vec3f sampleCircle = cv::Vec3f(CIRCLE_CENTER_X, CIRCLE_CENTER_Y, CIRCLE_CENTER_RADIUS);
 #endif
 
 #ifdef DEBUG_MODE
