@@ -1,3 +1,6 @@
+#ifndef __BIOMARKER_IMAGE_PROCESOR_H
+#define __BIOMARKER_IMAGE_PROCESOR_H
+
 class BiomarkerImageProcessor {
   int frameCounter;
   std::vector<cv::Scalar> samples;
@@ -10,3 +13,4 @@ private:
   cv::Scalar sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle);
 };
 
+#endif
