@@ -1,7 +1,6 @@
 #ifndef _MODEL_COMPONENT_H
 #define _MODEL_COMPONENT_H
 
-#include <math.h>
 #include <opencv2/core/core.hpp>
 
 //forward declaration of friend
@@ -23,7 +22,7 @@ public:
 
     //concrete classes must implement this-
     //obtain the results of the regression, for now just a float
-    virtual float getWeight();
+    virtual float getWeight() = 0;
 
     //enumerate the types of model components available
     enum ModelType{
@@ -32,11 +31,21 @@ public:
         EXPONENTIAL
     };
 
-    ModelComponent(float begin, float end);
+    //enumerate the variable that this component is testing
+    enum VariableType{
+        RED = 0,
+        BLUE,
+        GREEN,
+        HUE
+    };
+
+    //generic constructor, fills in the range and value to test
+    ModelComponent(float begin, float end, VariableType variable);
+    ~ModelComponent();
 
     //add a friend to look at our privates, lulz
     friend class RegressionModel;
-private:
+protected:
     //region of frames to analyze between
     float mBegin;
     float mEnd;
@@ -44,44 +53,48 @@ private:
     //weights
     cv::Mat mWeights;
 
+    //variable to be tested
+    VariableType mVar;
+
     //private getter for friends only
     float getBegin();
     float getEnd();
 
     //helper function to strip off matrix entries not within
-    //begin -> end
+    //range [mBegin, mEnd]
     cv::Mat cutToSize(cv::Mat x);
 };
 
 
-class LinearRegression
+class LinearRegression : public ModelComponent
 {
 public:
-    LinearRegression(float begin, float end);
+    LinearRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
 private:
 
 };
 
-class PointAnalysis
+class PointAnalysis : public ModelComponent
 {
 public:
-    PointAnalysis(float begin, float end);
+    PointAnalysis(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
 private:
-
+    float mAvg; //ezmode weight
 };
 
-class ExponentialRegression
+class ExponentialRegression : public ModelComponent
 {
 public:
-    PointAnalysis(float begin, float end);
+    ExponentialRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
 private:
-
+    cv::Mat logMat(cv::Mat x, float percent);
+    float mWeight; //more ezmode weights
 };
 
 
