@@ -60,33 +60,37 @@ int main(int argc, char** argv)
 
     RegressionFactory factory;
 
-    //BiomarkerImageProcessor proc;
-
     factory.createNew("Joe's test", "Glucose");
 
-    //factory.addNewComponent(ModelComponent::POINT, 400, 410, ModelComponent::HUE);
-    factory.addNewComponent(ModelComponent::EXPONENTIAL, 1, 400, ModelComponent::HUE);
+    //factory.addNewComponent(ModelComponent::LINEAR, 0, 1000, ModelComponent::GREEN);
+    factory.addNewComponent(ModelComponent::LINEAR, 0, 9790, ModelComponent::RED);
+    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::RED);
+    //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
+    //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);
+    //factory.addNewComponent(ModelComponent::EXPONENTIAL, 1, 400, ModelComponent::HUE);
 
     model = factory.getCreatedModel();
 
-    model->setIndices(3,-1,-1,-1,0);
+    model->setIndices(3,2,1,0,-1);
 
     std::vector<cv::Scalar> colors;
     std::vector<cv::Scalar> colors1;
     std::vector<cv::Scalar> colors2;
     std::vector<cv::Scalar> colors3;
     std::vector<cv::Scalar> colors4;
+    std::vector<cv::Scalar> colors5;
 
-    colors = readcsv("etc/40.csv");
+    colors = readcsv("etc/40mg.csv");
     model->calibrate(colors, 40);
-    colors1 = readcsv("etc/100.csv");
+    colors1 = readcsv("etc/100mg.csv");
     model->calibrate(colors1, 100);
-    colors2 = readcsv("etc/200.csv");
+    colors2 = readcsv("etc/200mg.csv");
     model->calibrate(colors2, 200);
-    colors3 = readcsv("etc/300.csv");
+    colors3 = readcsv("etc/300mg.csv");
     model->calibrate(colors3, 300);
-    colors4 = readcsv("etc/400.csv");
+    colors4 = readcsv("etc/400mg.csv");
     model->calibrate(colors4, 400);
+    colors5 = readcsv("etc/unknown.csv");
 
     float result = model->evaluate(colors);
     std::cout << "\n---------------------\nResult: " << result
@@ -101,6 +105,9 @@ int main(int argc, char** argv)
     std::cout << "\n---------------------\nResult: " << result
               << "\n---------------------\n";
     result = model->evaluate(colors4);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = model->evaluate(colors5);
     std::cout << "\n---------------------\nResult: " << result
               << "\n---------------------\n";
 

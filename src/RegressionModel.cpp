@@ -6,7 +6,8 @@ RegressionModel::RegressionModel()
 {
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
-    mFinalComponent = new LinearRegression(-10000, 10000, ModelComponent::BLUE);
+    mFinalComponent = new LinearRegression(-100000, 100000, ModelComponent::BLUE);
+    //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
 }
 
 //evaluate a test sample, return the estimation
@@ -22,10 +23,12 @@ void RegressionModel::calibrate(std::vector<cv::Scalar> colors,
                float calibrationValue)
 {
     runModel(colors);
+    //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
     cv::Mat weights = getModelWeights();
     weights.at<float>(0) = calibrationValue;
     mCalibrationData.push_back(weights);
     mFinalComponent->evaluate(mCalibrationData);
+    //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
     mFinalWeights = mFinalComponent->mWeights;
 }
 
@@ -81,7 +84,11 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
 
-    std::cout << result;
+    //for exp regr
+    //float r1, r2;
+    //r1 = mFinalWeights.row(0).at<float>(0);
+    //r2 = mFinalWeights.row(1).at<float>(0);
+    //result.at<float>(0) = exp(r2) + r1;
 
     return result.at<float>(0);
 }
@@ -139,6 +146,7 @@ cv::Mat RegressionModel::getModelWeights()
     {
         weights.at<float>(c+1) = mComponents[c]->getWeight();
     }
+    //std::cout << "GettingWeights: " << weights << std::endl;
     return weights;
 }
 

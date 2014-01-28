@@ -88,7 +88,10 @@ void LinearRegression::evaluate(cv::Mat x)
     cv::Mat independent(x.size().height, x.size().width, CV_32F, 1.f);
 
     x.col(0).copyTo(dependent.col(0));
-    x.col(1).copyTo(independent.col(1));
+    for(int c = 1; c < x.size().width; c++)
+    {
+        x.col(c).copyTo(independent.col(c));
+    }
 
     weights = (independent.t() * independent).inv() * independent.t() * dependent;
 
@@ -122,6 +125,10 @@ void ExponentialRegression::evaluate(cv::Mat x)
     ModelComponent* linearModel = new LinearRegression(mBegin, mEnd, mVar);
     linearModel->evaluate(x);
     mWeight = linearModel->getWeight();
+
+    mWeights = cv::Mat(2,1,CV_32F,0.f);
+    mWeights.row(0).at<float>(0) = mDisp;
+    mWeights.row(1).at<float>(0) = mWeight;
 }
 
 cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
@@ -132,12 +139,19 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
     int height = x.size().height;
 
     int end = height * percent;
+    if(end == height && height > 2)
+    {
+        end -= 1;
+    }
     for(int c = height-1; c > end; c--)
     {
         count += 1;
         total += x.col(0).at<float>(c);
     }
     avg = total / count;
+    avg -= .05;
+
+    mDisp = avg;
 
     cv::Mat out(0,2,CV_32F);
 

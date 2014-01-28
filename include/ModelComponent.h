@@ -95,6 +95,7 @@ public:
 private:
     cv::Mat logMat(cv::Mat x, float percent);
     float mWeight; //more ezmode weights
+    float mDisp;
 };
 
 
