@@ -12,9 +12,9 @@
 
 /* Predefined circle locations to use when circle detection is disabled.
  */
-#define CIRCLE_CENTER_X      675.0
-#define CIRCLE_CENTER_Y      375.0
-#define CIRCLE_CENTER_RADIUS 75.0
+#define CIRCLE_CENTER_X      317.5
+#define CIRCLE_CENTER_Y      237.5
+#define CIRCLE_CENTER_RADIUS 30.0
 
 /* Enable or disable circle detection. Will use predefined values above if
  * disabled.
