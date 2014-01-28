@@ -5,16 +5,16 @@
 #include "BiomarkerImageProcessor.h"
 
 #define DEBUG_MODE
-#define FRAME_SKIP 10
+#define FRAME_SKIP 0
 
 #define HOUGH_HIGH 218
 #define HOUGH_LOW  100
 
 /* Predefined circle locations to use when circle detection is disabled.
  */
-#define CIRCLE_CENTER_X      675.0
-#define CIRCLE_CENTER_Y      375.0
-#define CIRCLE_CENTER_RADIUS 75.0
+#define CIRCLE_CENTER_X      317.5
+#define CIRCLE_CENTER_Y      237.5
+#define CIRCLE_CENTER_RADIUS 30.0
 
 /* Enable or disable circle detection. Will use predefined values above if
  * disabled.
@@ -25,8 +25,6 @@ BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
 }
 
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
-  cv::cvtColor(frame, frame, CV_BGR2HLS);
-
 #ifdef CIRCLE_DETECTION
   cv::Vec3f sampleCircle = this->findSampleCircle(frame);
 #else
@@ -125,7 +123,6 @@ int main(int argc, char **argv) {
 
       cv::imshow("img_win", frame);
     } else {
-      std::cerr << "No frame..." << std::endl;
       break;
     }
 
