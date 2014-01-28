@@ -25,8 +25,6 @@ BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
 }
 
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
-  cv::cvtColor(frame, frame, CV_BGR2HLS);
-
 #ifdef CIRCLE_DETECTION
   cv::Vec3f sampleCircle = this->findSampleCircle(frame);
 #else
