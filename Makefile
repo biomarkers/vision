@@ -3,7 +3,7 @@ CXXFLAGS=-O2 -Iinclude
 LDFLAGS=`pkg-config --cflags opencv` `pkg-config --libs opencv`
 
 default:
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o vision src/BiomarkerImageProcessor.cpp
+	$(CXX) $(CXXFLAGS) -o vision src/BiomarkerImageProcessor.cpp $(LDFLAGS)
 regr:
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o regression src/regression.cpp
+	$(CXX) $(CXXFLAGS) -o regression src/ModelComponent.cpp src/RegressionModel.cpp src/RegressionFactory.cpp src/regrtest.cpp $(LDFLAGS)
 
