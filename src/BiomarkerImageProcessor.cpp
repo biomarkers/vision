@@ -5,7 +5,7 @@
 #include "BiomarkerImageProcessor.h"
 
 #define DEBUG_MODE
-#define FRAME_SKIP 10
+#define FRAME_SKIP 0
 
 #define HOUGH_HIGH 218
 #define HOUGH_LOW  100
