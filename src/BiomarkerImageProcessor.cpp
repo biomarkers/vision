@@ -123,7 +123,6 @@ int main(int argc, char **argv) {
 
       cv::imshow("img_win", frame);
     } else {
-      std::cerr << "No frame..." << std::endl;
       break;
     }
 
