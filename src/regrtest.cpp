@@ -62,6 +62,7 @@ int main(int argc, char** argv)
 
     factory.createNew("Joe's test", "Glucose");
 
+    //sample model ideas
     //factory.addNewComponent(ModelComponent::LINEAR, 0, 1000, ModelComponent::GREEN);
     factory.addNewComponent(ModelComponent::LINEAR, 0, 9790, ModelComponent::RED);
     factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::RED);
