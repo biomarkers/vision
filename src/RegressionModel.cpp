@@ -47,6 +47,19 @@ int RegressionModel::getNumCalibrations()
     return mCalibrationData.size().height;
 }
 
+//return biggest end frame
+int RegressionModel::getModelRunTime()
+{
+    int last = 0;
+    for(int c = 0; c < mComponents.size(); c++)
+    {
+        int temp = mComponents[c]->getEnd();
+        if(temp > last)
+            last = temp;
+    }
+    return last;
+}
+
 //matrix of raw model output from calibrations
 cv::Mat RegressionModel::getRawCalData()
 {

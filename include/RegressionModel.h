@@ -39,6 +39,8 @@ public:
     //number of calibration runs stored
     int getNumCalibrations();
 
+    int getModelRunTime();
+
     //matrix of raw model output from calibrations
     cv::Mat getRawCalData();
 
