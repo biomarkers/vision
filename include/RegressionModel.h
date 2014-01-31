@@ -1,7 +1,7 @@
 #ifndef _REGRESSION_MODEL_H
 #define _REGRESSION_MODEL_H
 
-//#include "../include/ModelComponent.h" //will need this later
+#include "../include/ModelComponent.h" //will need this later
                                          //for smart pointers
 
 #include <opencv2/core/core.hpp>
@@ -33,12 +33,19 @@ public:
     void calibrate(std::vector<cv::Scalar> colors,
                    float calibrationValue);
 
+    //re-run the calibration without any new data
+    void dryCalibrate();
+
+    //super secret function, don't touch!
+    void superSecretCalibrationOverride(cv::Mat newCalibration);
+
     //announce the indices of incoming matrices. Use -1 for not present
     void setIndices(int time, int red, int green, int blue, int hue);
 
     //number of calibration runs stored
     int getNumCalibrations();
 
+    ///grab the last frame we need to look at
     int getModelRunTime();
 
     //matrix of raw model output from calibrations
@@ -52,6 +59,12 @@ public:
 
     //have at least two calibration runs been done?
     bool isCalibrated();
+
+    //query the important UI things about each model component
+    int queryBegin(int component);
+    int queryEnd(int component);
+    ModelComponent::VariableType queryVariable(int component);
+    ModelComponent::ModelType queryModelType(int component);
 
 private:
     //private constructor, cannot build outside the factory

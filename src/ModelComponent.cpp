@@ -22,6 +22,11 @@ float ModelComponent::getEnd()
     return mEnd;
 }
 
+ModelComponent::VariableType ModelComponent::getVarType()
+{
+    return mVar;
+}
+
 //assume rows are in the form [y, x]
 cv::Mat ModelComponent::cutToSize(cv::Mat x)
 {
@@ -67,6 +72,10 @@ float PointAnalysis::getWeight()
     return mAvg;
 }
 
+ModelComponent::ModelType PointAnalysis::getModelType()
+{
+    return ModelComponent::POINT;
+}
 
 /*
  *      LINEAR REGRESSION
@@ -105,6 +114,11 @@ float LinearRegression::getWeight()
     else
         return 0; //should throw some error here, get around to that later
 
+}
+
+ModelComponent::ModelType LinearRegression::getModelType()
+{
+    return ModelComponent::LINEAR;
 }
 
 /*
@@ -177,7 +191,10 @@ float ExponentialRegression::getWeight()
 }
 
 
-
+ModelComponent::ModelType ExponentialRegression::getModelType()
+{
+    return ModelComponent::EXPONENTIAL;
+}
 
 
 

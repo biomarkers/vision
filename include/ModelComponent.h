@@ -28,7 +28,8 @@ public:
     enum ModelType{
         POINT = 0,
         LINEAR,
-        EXPONENTIAL
+        EXPONENTIAL,
+        INVALID_TYPE
     };
 
     //enumerate the variable that this component is testing
@@ -36,7 +37,8 @@ public:
         RED = 0,
         BLUE,
         GREEN,
-        HUE
+        HUE,
+        INVALID_VAR
     };
 
     //generic constructor, fills in the range and value to test
@@ -56,9 +58,11 @@ protected:
     //variable to be tested
     VariableType mVar;
 
-    //private getter for friends only
+    //private getters for friends only
     float getBegin();
     float getEnd();
+    VariableType getVarType();
+    virtual ModelType getModelType() = 0;
 
     //helper function to strip off matrix entries not within
     //range [mBegin, mEnd]
@@ -72,8 +76,8 @@ public:
     LinearRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
+    virtual ModelType getModelType();
 private:
-
 };
 
 class PointAnalysis : public ModelComponent
@@ -82,6 +86,7 @@ public:
     PointAnalysis(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
+    virtual ModelType getModelType();
 private:
     float mAvg; //ezmode weight
 };
@@ -92,6 +97,7 @@ public:
     ExponentialRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
+    virtual ModelType getModelType();
 private:
     cv::Mat logMat(cv::Mat x, float percent);
     float mWeight; //more ezmode weights

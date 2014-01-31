@@ -32,6 +32,17 @@ void RegressionModel::calibrate(std::vector<cv::Scalar> colors,
     mFinalWeights = mFinalComponent->mWeights;
 }
 
+void RegressionModel::dryCalibrate()
+{
+    mFinalComponent->evaluate(mCalibrationData);
+    mFinalWeights = mFinalComponent->mWeights;
+}
+
+void RegressionModel::superSecretCalibrationOverride(cv::Mat newCalibration)
+{
+    mCalibrationData = newCalibration;
+}
+
 void RegressionModel::setIndices(int time, int red, int green, int blue, int hue)
 {
     mTime = time;
@@ -82,6 +93,34 @@ std::string RegressionModel::GetTestName()
 bool RegressionModel::isCalibrated()
 {
     return mCalibrationData.size().height > 1;
+}
+
+int RegressionModel::queryBegin(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getBegin();
+    return 0;//throw error later
+}
+
+int RegressionModel::queryEnd(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getEnd();
+    return 0;//throw error later
+}
+
+ModelComponent::VariableType RegressionModel::queryVariable(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getVarType();
+    return ModelComponent::INVALID_VAR;//throw error later
+}
+
+ModelComponent::ModelType RegressionModel::queryModelType(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getModelType();
+    return ModelComponent::INVALID_TYPE;//throw error later
 }
 
 //private pusher for model components
