@@ -22,6 +22,11 @@ float ModelComponent::getEnd()
     return mEnd;
 }
 
+ModelComponent::VariableType ModelComponent::getVarType()
+{
+    return mVar;
+}
+
 //assume rows are in the form [y, x]
 cv::Mat ModelComponent::cutToSize(cv::Mat x)
 {
@@ -67,6 +72,10 @@ float PointAnalysis::getWeight()
     return mAvg;
 }
 
+ModelComponent::ModelType PointAnalysis::getModelType()
+{
+    return ModelComponent::POINT;
+}
 
 /*
  *      LINEAR REGRESSION
@@ -88,7 +97,10 @@ void LinearRegression::evaluate(cv::Mat x)
     cv::Mat independent(x.size().height, x.size().width, CV_32F, 1.f);
 
     x.col(0).copyTo(dependent.col(0));
-    x.col(1).copyTo(independent.col(1));
+    for(int c = 1; c < x.size().width; c++)
+    {
+        x.col(c).copyTo(independent.col(c));
+    }
 
     weights = (independent.t() * independent).inv() * independent.t() * dependent;
 
@@ -102,6 +114,11 @@ float LinearRegression::getWeight()
     else
         return 0; //should throw some error here, get around to that later
 
+}
+
+ModelComponent::ModelType LinearRegression::getModelType()
+{
+    return ModelComponent::LINEAR;
 }
 
 /*
@@ -122,6 +139,10 @@ void ExponentialRegression::evaluate(cv::Mat x)
     ModelComponent* linearModel = new LinearRegression(mBegin, mEnd, mVar);
     linearModel->evaluate(x);
     mWeight = linearModel->getWeight();
+
+    mWeights = cv::Mat(2,1,CV_32F,0.f);
+    mWeights.row(0).at<float>(0) = mDisp;
+    mWeights.row(1).at<float>(0) = mWeight;
 }
 
 cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
@@ -132,12 +153,19 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
     int height = x.size().height;
 
     int end = height * percent;
+    if(end == height && height > 2)
+    {
+        end -= 1;
+    }
     for(int c = height-1; c > end; c--)
     {
         count += 1;
         total += x.col(0).at<float>(c);
     }
     avg = total / count;
+    avg -= .05;
+
+    mDisp = avg;
 
     cv::Mat out(0,2,CV_32F);
 
@@ -163,7 +191,10 @@ float ExponentialRegression::getWeight()
 }
 
 
-
+ModelComponent::ModelType ExponentialRegression::getModelType()
+{
+    return ModelComponent::EXPONENTIAL;
+}
 
 
 

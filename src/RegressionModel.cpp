@@ -6,7 +6,8 @@ RegressionModel::RegressionModel()
 {
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
-    mFinalComponent = new LinearRegression(-10000, 10000, ModelComponent::BLUE);
+    mFinalComponent = new LinearRegression(-100000, 100000, ModelComponent::BLUE);
+    //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
 }
 
 //evaluate a test sample, return the estimation
@@ -22,11 +23,24 @@ void RegressionModel::calibrate(std::vector<cv::Scalar> colors,
                float calibrationValue)
 {
     runModel(colors);
+    //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
     cv::Mat weights = getModelWeights();
     weights.at<float>(0) = calibrationValue;
     mCalibrationData.push_back(weights);
     mFinalComponent->evaluate(mCalibrationData);
+    //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
     mFinalWeights = mFinalComponent->mWeights;
+}
+
+void RegressionModel::dryCalibrate()
+{
+    mFinalComponent->evaluate(mCalibrationData);
+    mFinalWeights = mFinalComponent->mWeights;
+}
+
+void RegressionModel::superSecretCalibrationOverride(cv::Mat newCalibration)
+{
+    mCalibrationData = newCalibration;
 }
 
 void RegressionModel::setIndices(int time, int red, int green, int blue, int hue)
@@ -42,6 +56,19 @@ void RegressionModel::setIndices(int time, int red, int green, int blue, int hue
 int RegressionModel::getNumCalibrations()
 {
     return mCalibrationData.size().height;
+}
+
+//return biggest end frame
+int RegressionModel::getModelRunTime()
+{
+    int last = 0;
+    for(int c = 0; c < mComponents.size(); c++)
+    {
+        int temp = mComponents[c]->getEnd();
+        if(temp > last)
+            last = temp;
+    }
+    return last;
 }
 
 //matrix of raw model output from calibrations
@@ -68,6 +95,34 @@ bool RegressionModel::isCalibrated()
     return mCalibrationData.size().height > 1;
 }
 
+int RegressionModel::queryBegin(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getBegin();
+    return 0;//throw error later
+}
+
+int RegressionModel::queryEnd(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getEnd();
+    return 0;//throw error later
+}
+
+ModelComponent::VariableType RegressionModel::queryVariable(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getVarType();
+    return ModelComponent::INVALID_VAR;//throw error later
+}
+
+ModelComponent::ModelType RegressionModel::queryModelType(int component)
+{
+    if(component < mComponents.size())
+        return mComponents[component]->getModelType();
+    return ModelComponent::INVALID_TYPE;//throw error later
+}
+
 //private pusher for model components
 void RegressionModel::pushComponent(ModelComponent* ptr)
 {
@@ -81,7 +136,11 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
 
-    std::cout << result;
+    //for exp regr
+    //float r1, r2;
+    //r1 = mFinalWeights.row(0).at<float>(0);
+    //r2 = mFinalWeights.row(1).at<float>(0);
+    //result.at<float>(0) = exp(r2) + r1;
 
     return result.at<float>(0);
 }
@@ -139,6 +198,7 @@ cv::Mat RegressionModel::getModelWeights()
     {
         weights.at<float>(c+1) = mComponents[c]->getWeight();
     }
+    //std::cout << "GettingWeights: " << weights << std::endl;
     return weights;
 }
 

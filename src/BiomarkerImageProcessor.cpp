@@ -19,7 +19,7 @@
 /* Enable or disable circle detection. Will use predefined values above if
  * disabled.
  */
-// #define CIRCLE_DETECTION
+//#define CIRCLE_DETECTION
 
 BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
 }
