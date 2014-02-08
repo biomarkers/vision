@@ -1,6 +1,6 @@
 CXX=clang++
 CXXFLAGS=-O2 -Iinclude
-LDFLAGS=`pkg-config --cflags opencv` `pkg-config --libs opencv`
+LDFLAGS=`pkg-config --cflags opencv` `pkg-config --libs opencv` -lboost_system
 
 default:
 	$(CXX) $(CXXFLAGS) -o vision src/BiomarkerImageProcessor.cpp $(LDFLAGS)
