@@ -1,6 +1,7 @@
 #include "BiomarkerImageProcessor.h"
 
 #include <iostream>
+#include <boost/timer/timer.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -19,9 +20,13 @@
 /* Enable or disable circle detection. Will use predefined values above if
  * disabled.
  */
-//#define CIRCLE_DETECTION
+// #define CIRCLE_DETECTION
 
-BiomarkerImageProcessor::BiomarkerImageProcessor() : frameCounter(0) {
+BiomarkerImageProcessor::BiomarkerImageProcessor() {
+}
+
+void BiomarkerImageProcessor::reset() {
+  timer = boost::timer::cpu_timer();
 }
 
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
@@ -36,7 +41,9 @@ cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
 #endif
 
   cv::Scalar sample = this->sampleSlide(frame, sampleCircle);
-  sample[3] = (float) frameCounter++;
+
+  boost::timer::nanosecond_type const one_second(1 * 1000000000LL);
+  sample[3] = (float) timer.elapsed().wall / (float) one_second;
 
   samples.push_back(sample);
 
