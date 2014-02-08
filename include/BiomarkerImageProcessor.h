@@ -1,6 +1,8 @@
 #ifndef __BIOMARKER_IMAGE_PROCESOR_H
 #define __BIOMARKER_IMAGE_PROCESOR_H
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 class BiomarkerImageProcessor {
   int frameCounter;
   std::vector<cv::Scalar> samples;

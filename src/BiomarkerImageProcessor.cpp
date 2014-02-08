@@ -1,8 +1,8 @@
+#include "BiomarkerImageProcessor.h"
+
 #include <iostream>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
-#include "BiomarkerImageProcessor.h"
 
 #define DEBUG_MODE
 #define FRAME_SKIP 0
