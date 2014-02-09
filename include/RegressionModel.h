@@ -7,6 +7,7 @@
 #include <opencv2/core/core.hpp>
 #include <vector>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 //forward declare a friend
 class RegressionFactory;
@@ -15,12 +16,6 @@ class RegressionFactory;
 //delete this when smart pointers happen
 class ModelComponent;
 
-/*
- * For now, DO NOT COPY objects of this class, dumb pointers are used
- *
- *
- * ...srs mens, don't do it
- */
 
 class RegressionModel{
 public:
@@ -71,7 +66,7 @@ private:
     RegressionModel();
 
     //private pusher for model components
-    void pushComponent(ModelComponent* ptr);
+    void pushComponent(ComponentPtr ptr);
 
     //private unknown evaluation
     float evaluateUnknown(cv::Mat weights);
@@ -79,22 +74,25 @@ private:
     //run the model
     void runModel(std::vector<cv::Scalar> colors);
 
-    //get a row vector of run results, starting with a 1.0
+    //get a row vector of run results
     cv::Mat getModelWeights();
 
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mHue, mTime;
 
     //list of the components that make up the model
-    std::vector<ModelComponent*> mComponents;
+    std::vector<ComponentPtr> mComponents;
 
     //linear regression model for the final weights
-    ModelComponent* mFinalComponent;
+    ComponentPtr mFinalComponent;
 
     //calibration test outcomes, in raw data format
     //rows of form [y, w1, w2, w3...]
     //where wi is the regression output from the ith model component
     cv::Mat mCalibrationData;
+
+    //raw data of calibration tests, so shit can be graphed later on yo
+    std::vector<cv::Mat> mRawCalibrationData;
 
     //final regression weights for use in the evaluation of an unknown
     cv::Mat mFinalWeights;
@@ -106,6 +104,9 @@ private:
     std::string mTestName;
 
 };
+
+//typedef a shared ptr for this class
+typedef boost::shared_ptr<RegressionModel> ModelPtr;
 
 #endif
 

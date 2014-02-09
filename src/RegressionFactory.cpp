@@ -4,16 +4,17 @@
 
 #include <iostream>
 
-RegressionModel* RegressionFactory::loadFromFile(std::string filename)
+ModelPtr RegressionFactory::loadFromFile(std::string filename)
 {
     std::cout << "Functionality not implemented\n";
     (void)filename;
-    return 0;
+    ModelPtr blank;
+    return blank;
 }
 
 void RegressionFactory::createNew(std::string modelName, std::string testName)
 {
-    mTempModel = new RegressionModel();
+    mTempModel.reset(new RegressionModel());
     mTempModel->mModelName = modelName;
     mTempModel->mTestName = testName;
 }
@@ -28,17 +29,19 @@ void RegressionFactory::addNewComponent(ModelComponent::ModelType type,
         return;
     }
 
-    ModelComponent* comp;
+    ComponentPtr comp;
     switch(type)
     {
     case ModelComponent::LINEAR:
-        comp = new LinearRegression(begin, end, var);
+        comp.reset(new LinearRegression(begin, end, var));
         break;
     case ModelComponent::EXPONENTIAL:
-        comp = new ExponentialRegression(begin, end, var);
+        comp.reset(new ExponentialRegression(begin, end, var));
         break;
     case ModelComponent::POINT:
-        comp = new PointAnalysis(begin, end, var);
+        comp.reset(new PointAnalysis(begin, end, var));
+        break;
+    default:
         break;
     }
     if(comp)
@@ -47,7 +50,7 @@ void RegressionFactory::addNewComponent(ModelComponent::ModelType type,
         std::cout << "Component not created\n\n";
 }
 
-RegressionModel* RegressionFactory::getCreatedModel()
+ModelPtr RegressionFactory::getCreatedModel()
 {
     return mTempModel;
 }

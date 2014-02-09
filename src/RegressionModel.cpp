@@ -6,7 +6,7 @@ RegressionModel::RegressionModel()
 {
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
-    mFinalComponent = new LinearRegression(-100000, 100000, ModelComponent::BLUE);
+    mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
 }
 
@@ -124,7 +124,7 @@ ModelComponent::ModelType RegressionModel::queryModelType(int component)
 }
 
 //private pusher for model components
-void RegressionModel::pushComponent(ModelComponent* ptr)
+void RegressionModel::pushComponent(ComponentPtr ptr)
 {
     mComponents.push_back(ptr);
 }
