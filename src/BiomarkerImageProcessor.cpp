@@ -13,16 +13,20 @@
 
 /* Predefined circle locations to use when circle detection is disabled.
  */
-#define CIRCLE_CENTER_X      317.5
-#define CIRCLE_CENTER_Y      237.5
-#define CIRCLE_CENTER_RADIUS 30.0
+#define DEFAULT_CIRCLE_CENTER_X      317.5
+#define DEFAULT_CIRCLE_CENTER_Y      237.5
+#define DEFAULT_CIRCLE_RADIUS        30.0
 
 /* Enable or disable circle detection. Will use predefined values above if
  * disabled.
  */
 // #define CIRCLE_DETECTION
 
-BiomarkerImageProcessor::BiomarkerImageProcessor() {
+BiomarkerImageProcessor::BiomarkerImageProcessor() :
+  circleCenterX(DEFAULT_CIRCLE_CENTER_X),
+  circleCenterY(DEFAULT_CIRCLE_CENTER_Y),
+  circleRadius(DEFAULT_CIRCLE_RADIUS),
+  circleDetectionEnabled(false) {
 }
 
 void BiomarkerImageProcessor::reset() {
@@ -30,11 +34,12 @@ void BiomarkerImageProcessor::reset() {
 }
 
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
-#ifdef CIRCLE_DETECTION
-  cv::Vec3f sampleCircle = this->findSampleCircle(frame);
-#else
-  cv::Vec3f sampleCircle = cv::Vec3f(CIRCLE_CENTER_X, CIRCLE_CENTER_Y, CIRCLE_CENTER_RADIUS);
-#endif
+  cv::Vec3f sampleCircle;
+  if(isCircleDetectionEnabled()) {
+    sampleCircle = this->findSampleCircle(frame);
+  } else {
+    sampleCircle = cv::Vec3f(circleCenterX, circleCenterY, circleRadius);
+  }
 
 #ifdef DEBUG_MODE
   cv::circle(frame, cv::Point(sampleCircle[0], sampleCircle[1]), sampleCircle[2], cv::Scalar(255, 0, 0), 1, 8, 0);
