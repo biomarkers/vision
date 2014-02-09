@@ -7,8 +7,14 @@
 class BiomarkerImageProcessor {
 public:
   BiomarkerImageProcessor();
+
+  /* Reset the internal timer to prepare for a new test run. */
   void reset();
+
+  /* Process a single input frame and store the result. */
   cv::Scalar process(cv::Mat frame);
+
+  /* Return the list of samples for the current test. */
   std::vector<cv::Scalar> getSamples() { return samples; }
 
   /* Options */

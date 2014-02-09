@@ -31,6 +31,7 @@ BiomarkerImageProcessor::BiomarkerImageProcessor() :
 
 void BiomarkerImageProcessor::reset() {
   timer = boost::timer::cpu_timer();
+  samples.clear();
 }
 
 cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
