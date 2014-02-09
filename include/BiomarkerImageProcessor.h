@@ -8,7 +8,6 @@ class BiomarkerImageProcessor {
 public:
   BiomarkerImageProcessor();
   void reset();
-  void process();
   cv::Scalar process(cv::Mat frame);
   std::vector<cv::Scalar> getSamples() { return samples; }
 private:
