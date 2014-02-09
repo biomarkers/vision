@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 {
     std::cout << "Jollies!\n";
 
-    RegressionModel* model;
+    ModelPtr model;
 
     RegressionFactory factory;
 
@@ -64,8 +64,10 @@ int main(int argc, char** argv)
 
     //sample model ideas
     //factory.addNewComponent(ModelComponent::LINEAR, 0, 1000, ModelComponent::GREEN);
-    factory.addNewComponent(ModelComponent::LINEAR, 0, 9790, ModelComponent::RED);
+    factory.addNewComponent(ModelComponent::LINEAR, 0, 9789, ModelComponent::RED);
+    std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::RED);
+    std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 1, 400, ModelComponent::HUE);
@@ -111,5 +113,8 @@ int main(int argc, char** argv)
     result = model->evaluate(colors5);
     std::cout << "\n---------------------\nResult: " << result
               << "\n---------------------\n";
+
+    cv::Mat shit = model->getRawCalData();
+    std::cout << shit << "\n\n";
 
 }

@@ -2,6 +2,7 @@
 #define _MODEL_COMPONENT_H
 
 #include <opencv2/core/core.hpp>
+#include <boost/shared_ptr.hpp>
 
 //forward declaration of friend
 class RegressionModel;
@@ -69,6 +70,8 @@ protected:
     cv::Mat cutToSize(cv::Mat x);
 };
 
+//typedef a shared ptr for this class
+typedef boost::shared_ptr<ModelComponent> ComponentPtr;
 
 class LinearRegression : public ModelComponent
 {

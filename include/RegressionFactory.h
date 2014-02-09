@@ -7,7 +7,7 @@
 
 class RegressionFactory{
 public:
-    RegressionModel* loadFromFile(std::string filename);
+    ModelPtr loadFromFile(std::string filename);
 
     void createNew(std::string modelName, std::string testName);
 
@@ -15,9 +15,9 @@ public:
                          float begin, float end,
                          ModelComponent::VariableType var);
 
-    RegressionModel* getCreatedModel();
+    ModelPtr getCreatedModel();
 private:
-    RegressionModel* mTempModel;
+    ModelPtr mTempModel;
 };
 
 #endif
