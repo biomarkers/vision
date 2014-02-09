@@ -45,7 +45,7 @@ cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
   boost::timer::nanosecond_type const one_second(1 * 1000000000LL);
   sample[3] = (float) timer.elapsed().wall / (float) one_second;
 
-  samples.push_back(sample);
+  this->samples.push_back(sample);
 
   return sample;
 }
