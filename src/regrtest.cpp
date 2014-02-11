@@ -117,4 +117,8 @@ int main(int argc, char** argv)
     cv::Mat shit = model->getRawCalData();
     std::cout << shit << "\n\n";
 
+    model->saveToFile();
+
+    factory.loadFromFile(model->GetModelName());
+
 }

@@ -12,10 +12,10 @@
 //forward declare a friend
 class RegressionFactory;
 
-//forward declare components for pointing
-//delete this when smart pointers happen
-class ModelComponent;
-
+//forward declare the damn class to typedef a pointer for it
+class RegressionModel;
+//typedef a shared ptr for this class
+typedef boost::shared_ptr<RegressionModel> ModelPtr;
 
 class RegressionModel{
 public:
@@ -23,6 +23,12 @@ public:
 
     //evaluate a test sample, return the estimation
     float evaluate(std::vector<cv::Scalar> colors);
+
+    //static file loader
+    static ModelPtr loadFromFile(std::string filename);
+
+    //serialize the object to a file
+    void saveToFile();
 
     //add a calibration point to the model
     void calibrate(std::vector<cv::Scalar> colors,
@@ -77,6 +83,8 @@ private:
     //get a row vector of run results
     cv::Mat getModelWeights();
 
+    //print out a vector
+
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mHue, mTime;
 
@@ -92,7 +100,7 @@ private:
     cv::Mat mCalibrationData;
 
     //raw data of calibration tests, so shit can be graphed later on yo
-    std::vector<cv::Mat> mRawCalibrationData;
+    std::vector<std::vector<cv::Scalar> > mRawCalibrationData;
 
     //final regression weights for use in the evaluation of an unknown
     cv::Mat mFinalWeights;
@@ -104,9 +112,6 @@ private:
     std::string mTestName;
 
 };
-
-//typedef a shared ptr for this class
-typedef boost::shared_ptr<RegressionModel> ModelPtr;
 
 #endif
 

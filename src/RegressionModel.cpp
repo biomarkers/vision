@@ -1,6 +1,7 @@
 #include "../include/RegressionModel.h"
 #include "../include/ModelComponent.h"
 #include <iostream>
+#include <fstream>
 
 RegressionModel::RegressionModel()
 {
@@ -18,10 +19,46 @@ float RegressionModel::evaluate(std::vector<cv::Scalar> colors)
     return evaluateUnknown(weights);
 }
 
+//static file loader
+ModelPtr RegressionModel::loadFromFile(std::string filename)
+{
+    ModelPtr blank;
+    return blank;
+}
+
+//serialize the object to a file
+void RegressionModel::saveToFile()
+{
+    std::ofstream gg;
+    gg.open(mModelName.c_str());
+
+    gg << mRed << std::endl;
+    gg << mGreen << std::endl;
+    gg << mBlue << std::endl;
+    gg << mHue << std::endl;
+    gg << mTime << std::endl;
+
+    /*
+    gg << mComponents.size() << std::endl;
+
+    gg << mComponents << std::endl;
+
+    gg << mCalibrationData << std::endl;
+
+    gg << mRawCalibrationData << std::endl;
+
+    gg << mFinalWeights << std::endl;
+
+    gg << mTestName;
+    */
+    gg.close();
+}
+
 //add a calibration point to the model
 void RegressionModel::calibrate(std::vector<cv::Scalar> colors,
                float calibrationValue)
 {
+    mRawCalibrationData.push_back(colors);
     runModel(colors);
     //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
     cv::Mat weights = getModelWeights();
@@ -132,7 +169,6 @@ void RegressionModel::pushComponent(ComponentPtr ptr)
 //private unknown evaluation
 float RegressionModel::evaluateUnknown(cv::Mat weights)
 {
-    std::cout << "sup\n";
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
 

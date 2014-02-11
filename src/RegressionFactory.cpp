@@ -3,10 +3,19 @@
 #include "../include/ModelComponent.h"
 
 #include <iostream>
+#include <fstream>
 
 ModelPtr RegressionFactory::loadFromFile(std::string filename)
 {
     std::cout << "Functionality not implemented\n";
+    std::ifstream ggin;
+    ggin.open(filename.c_str());
+    if(ggin.is_open())
+    {
+        std::cout << "Success!";
+        ggin.close();
+    }
+
     (void)filename;
     ModelPtr blank;
     return blank;
