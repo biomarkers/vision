@@ -32,7 +32,14 @@ int main(int argc, char **argv) {
   cv::VideoCapture cap(argv[1]);
 
   DataStore p = DataStore::open();
+  p.createTables();
+  std::vector<ModelEntry> entries = p.findAllModelEntries();
+  for(int i = 0; i < entries.size(); i++) {
+    std::cout << entries[i].data << std::endl;
+  }
+  p.close();
 
+  /*
   cv::Mat frame;
   // skipNFrames(cap, 8730, &frame);
   while(true) {
@@ -52,6 +59,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
+  */
 
   return 0;
 }
