@@ -12,7 +12,7 @@ RegressionModel::RegressionModel()
 }
 
 //evaluate a test sample, return the estimation
-float RegressionModel::evaluate(std::vector<cv::Scalar> colors)
+float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
 {
     runModel(colors);
     cv::Mat weights = getModelWeights();
@@ -55,7 +55,7 @@ void RegressionModel::saveToFile()
 }
 
 //add a calibration point to the model
-void RegressionModel::calibrate(std::vector<cv::Scalar> colors,
+void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
                float calibrationValue)
 {
     mRawCalibrationData.push_back(colors);
@@ -181,7 +181,7 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
     return result.at<float>(0);
 }
 
-void RegressionModel::runModel(std::vector<cv::Scalar> colors)
+void RegressionModel::runModel(std::vector<cv::SerializableScalar> colors)
 {
     cv::Mat red, green, blue, hue;
     cv::Mat row(1,2,CV_32F);

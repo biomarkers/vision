@@ -3,9 +3,17 @@
 
 #include <opencv2/core/core.hpp>
 #include <boost/shared_ptr.hpp>
+#include "../include/SerializableMat.h"
 
 //forward declaration of friend
 class RegressionModel;
+
+//forward declaring serialization class
+namespace boost{
+namespace serialization{
+class access;
+}
+}
 
 //abstract interface for a component of a regression model
 class ModelComponent
@@ -54,7 +62,7 @@ protected:
     float mEnd;
 
     //weights
-    cv::Mat mWeights;
+    cv::SerializableMat mWeights;
 
     //variable to be tested
     VariableType mVar;
@@ -68,6 +76,15 @@ protected:
     //helper function to strip off matrix entries not within
     //range [mBegin, mEnd]
     cv::Mat cutToSize(cv::Mat x);
+
+    friend class boost::serialization::access;
+
+    template<typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+        (void)version;
+        ar & mBegin & mEnd & mWeights & mVar;
+    }
 };
 
 //typedef a shared ptr for this class

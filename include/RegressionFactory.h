@@ -6,7 +6,7 @@
 
 
 class RegressionFactory{
-public:
+public:    
     ModelPtr loadFromFile(std::string filename);
 
     void createNew(std::string modelName, std::string testName);
@@ -18,6 +18,8 @@ public:
     ModelPtr getCreatedModel();
 private:
     ModelPtr mTempModel;
+
+    //std::string mBasepath;
 };
 
 #endif

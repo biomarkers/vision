@@ -1,4 +1,5 @@
 #include "../include/ModelComponent.h"
+#include "../include/SerializableScalar.h"
 #include <math.h>
 
 

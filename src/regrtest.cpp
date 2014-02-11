@@ -2,12 +2,17 @@
 #include "../include/RegressionModel.h"
 //#include "../include/BiomarkerImageProcessor.h"
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include <iostream>
 #include <string>
 #include <fstream>
 
 //read a csv file and return it in a vector of scalars
-std::vector<cv::Scalar> readcsv(std::string fname)
+std::vector<cv::SerializableScalar> readcsv(std::string fname)
 {
     //Open up that file bor
     std::ifstream in;
@@ -26,7 +31,7 @@ std::vector<cv::Scalar> readcsv(std::string fname)
     cols = std::count(temp.begin(), temp.end(), ',') + 1;
 
     //vector to fill
-    std::vector<cv::Scalar> M;
+    std::vector<cv::SerializableScalar> M;
     //temp scalar to hold each row as we read the file
     cv::Scalar Y(0.f, 0.f, 0.f, 0.f);
 
@@ -76,12 +81,12 @@ int main(int argc, char** argv)
 
     model->setIndices(3,2,1,0,-1);
 
-    std::vector<cv::Scalar> colors;
-    std::vector<cv::Scalar> colors1;
-    std::vector<cv::Scalar> colors2;
-    std::vector<cv::Scalar> colors3;
-    std::vector<cv::Scalar> colors4;
-    std::vector<cv::Scalar> colors5;
+    std::vector<cv::SerializableScalar> colors;
+    std::vector<cv::SerializableScalar> colors1;
+    std::vector<cv::SerializableScalar> colors2;
+    std::vector<cv::SerializableScalar> colors3;
+    std::vector<cv::SerializableScalar> colors4;
+    std::vector<cv::SerializableScalar> colors5;
 
     colors = readcsv("etc/40mg.csv");
     model->calibrate(colors, 40);
@@ -117,8 +122,23 @@ int main(int argc, char** argv)
     cv::Mat shit = model->getRawCalData();
     std::cout << shit << "\n\n";
 
-    model->saveToFile();
+    //model->saveToFile();
 
-    factory.loadFromFile(model->GetModelName());
+    //factory.loadFromFile(model->GetModelName());
+    {
+        std::ofstream gg("test.txt");
+        boost::archive::text_oarchive ar(gg);
+        ar & model;
+    }
+
+    ModelPtr mod2;
+    {
+        std::ifstream gg("test.txt");
+        boost::archive::text_iarchive ar(gg);
+        ar & mod2;
+    }
+
+
+
 
 }

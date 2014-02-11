@@ -3,11 +3,20 @@
 
 #include "../include/ModelComponent.h" //will need this later
                                          //for smart pointers
+#include "../include/SerializableScalar.h"
+#include "../include/SerializableMat.h"
 
 #include <opencv2/core/core.hpp>
 #include <vector>
 #include <string>
 #include <boost/shared_ptr.hpp>
+
+//forward declaring serialization class
+namespace boost{
+namespace serialization{
+class access;
+}
+}
 
 //forward declare a friend
 class RegressionFactory;
@@ -22,7 +31,7 @@ public:
     friend class RegressionFactory;
 
     //evaluate a test sample, return the estimation
-    float evaluate(std::vector<cv::Scalar> colors);
+    float evaluate(std::vector<cv::SerializableScalar> colors);
 
     //static file loader
     static ModelPtr loadFromFile(std::string filename);
@@ -31,7 +40,7 @@ public:
     void saveToFile();
 
     //add a calibration point to the model
-    void calibrate(std::vector<cv::Scalar> colors,
+    void calibrate(std::vector<cv::SerializableScalar> colors,
                    float calibrationValue);
 
     //re-run the calibration without any new data
@@ -78,7 +87,7 @@ private:
     float evaluateUnknown(cv::Mat weights);
 
     //run the model
-    void runModel(std::vector<cv::Scalar> colors);
+    void runModel(std::vector<cv::SerializableScalar> colors);
 
     //get a row vector of run results
     cv::Mat getModelWeights();
@@ -97,19 +106,29 @@ private:
     //calibration test outcomes, in raw data format
     //rows of form [y, w1, w2, w3...]
     //where wi is the regression output from the ith model component
-    cv::Mat mCalibrationData;
+    cv::SerializableMat mCalibrationData;
 
     //raw data of calibration tests, so shit can be graphed later on yo
-    std::vector<std::vector<cv::Scalar> > mRawCalibrationData;
+    std::vector<std::vector<cv::SerializableScalar> > mRawCalibrationData;
 
     //final regression weights for use in the evaluation of an unknown
-    cv::Mat mFinalWeights;
+    cv::SerializableMat mFinalWeights;
 
     //name of the model, eg. "Chad's Baller Glucose Model"
     std::string mModelName;
 
     //name of test being performed, eg. "Glucose"
     std::string mTestName;
+
+    //allow serialization
+    friend class boost::serialization::access;
+
+    template<typename Archive>
+    void serialize(Archive& ar, const unsigned version)
+    {
+        (void)version;
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mFinalWeights & mModelName & mTestName;
+    }
 
 };
 
