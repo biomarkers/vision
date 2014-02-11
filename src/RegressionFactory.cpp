@@ -15,6 +15,10 @@ ModelPtr RegressionFactory::loadFromFile(std::string filename)
         std::cout << "Success!";
         ggin.close();
     }
+    else
+    {
+        std::cout << "fuck you kyle\n\n\n\n\n\n\n";
+    }
 
     (void)filename;
     ModelPtr blank;
