@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "BiomarkerImageProcessor.h"
+#include "DataPersistence.h"
 
 #define FRAME_SKIP 0
 
@@ -29,6 +30,8 @@ int main(int argc, char **argv) {
 
   cv::namedWindow("img_win", CV_WINDOW_AUTOSIZE);
   cv::VideoCapture cap(argv[1]);
+
+  DataStore p = DataStore::open();
 
   cv::Mat frame;
   // skipNFrames(cap, 8730, &frame);
