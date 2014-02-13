@@ -32,6 +32,8 @@ public:
   void close();
 
   std::vector<ModelEntry> findAllModelEntries();
+  std::vector<ResultEntry> findAllResultEntries();
+  std::vector<ResultEntry> findResultsForModelName(std::string name);
 private:
   DataStore(sqlite3 *db);
 

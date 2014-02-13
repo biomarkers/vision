@@ -54,6 +54,76 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
   return entries;
 }
 
+std::vector<ResultEntry> DataStore::findAllResultEntries() {
+  std::vector<ResultEntry> entries;
+
+  sqlite3_stmt *stmt;
+  int rc = sqlite3_prepare_v2(db, "select id, model_name, subject_name, notes, date, value from result", -1, &stmt, 0);
+  if(rc == SQLITE_OK) {
+    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+      switch(rc) {
+        case SQLITE_BUSY:
+          std::cout << "Waiting..." << std::endl;
+          break;
+        case SQLITE_ERROR:
+          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
+          break;
+        case SQLITE_ROW:
+          int cols = sqlite3_column_count(stmt);
+
+          int id = sqlite3_column_int(stmt, 0);
+          std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+          std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+          std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
+          std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
+          double value = sqlite3_column_double(stmt, 5);
+
+          entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+          break;
+      }
+    }
+  } else {
+    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
+  }
+
+  return entries;
+}
+
+std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelName) {
+  std::vector<ResultEntry> entries;
+
+  sqlite3_stmt *stmt;
+  int rc = sqlite3_prepare_v2(db, ("select id, model_name, subject_name, notes, date, value from result where model_name = '" + modelName + "'").c_str(), -1, &stmt, 0);
+  if(rc == SQLITE_OK) {
+    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+      switch(rc) {
+        case SQLITE_BUSY:
+          std::cout << "Waiting..." << std::endl;
+          break;
+        case SQLITE_ERROR:
+          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
+          break;
+        case SQLITE_ROW:
+          int cols = sqlite3_column_count(stmt);
+
+          int id = sqlite3_column_int(stmt, 0);
+          std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+          std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+          std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
+          std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
+          double value = sqlite3_column_double(stmt, 5);
+
+          entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+          break;
+      }
+    }
+  } else {
+    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
+  }
+
+  return entries;
+}
+
 void DataStore::createTables() {
   std::string sql =
     "CREATE TABLE IF NOT EXISTS model ("
