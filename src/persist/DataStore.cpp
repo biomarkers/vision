@@ -1,12 +1,12 @@
-#include "DataPersistence.h"
+#include "persist/DataStore.h"
 
 #include <iostream>
 
 DataStore::DataStore(sqlite3 *db) : db(db) {}
 
-DataStore DataStore::open() {
+DataStore DataStore::open(std::string db_path) {
   sqlite3 *db;
-  if(sqlite3_open(DB_NAME, &db) != SQLITE_OK) {
+  if(sqlite3_open(db_path.c_str(), &db) != SQLITE_OK) {
     std::cout << "Error opening SQLite database" << std::endl;
   }
 
