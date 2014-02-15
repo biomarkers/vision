@@ -23,6 +23,32 @@ int callback(void * param, int argc, char **argv, char **azColName) {
   return 0;
 }
 
+void DataStore::createTables() {
+  std::string sql =
+    "CREATE TABLE IF NOT EXISTS model ("
+       "name CHAR(50) PRIMARY KEY,"
+       "data BLOB"
+     ");"
+     "CREATE TABLE IF NOT EXISTS result ("
+       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+       "model_name CHAR(50),"
+       "subject_name CHAR(50),"
+       "notes TEXT,"
+       "date TEXT,"
+       "value REAL,"
+       "FOREIGN KEY(model_name) REFERENCES model(name)"
+     ");";
+
+  char *errmsg;
+  int r = sqlite3_exec(db, sql.c_str(), callback, 0, &errmsg);
+  if(r != SQLITE_OK) {
+    std::cout << "Error: " << errmsg << std::endl;
+    sqlite3_free(errmsg);
+  } else {
+    std::cout << "Running..." << std::endl;
+  }
+}
+
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
   std::vector<ModelEntry> entries;
 
@@ -124,30 +150,30 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
   return entries;
 }
 
-void DataStore::createTables() {
-  std::string sql =
-    "CREATE TABLE IF NOT EXISTS model ("
-       "name CHAR(50) PRIMARY KEY,"
-       "data BLOB"
-     ");"
-     "CREATE TABLE IF NOT EXISTS result ("
-       "id INTEGER PRIMARY KEY,"
-       "model_name CHAR(50),"
-       "subject_name CHAR(50),"
-       "notes TEXT,"
-       "date TEXT,"
-       "value REAL,"
-       "FOREIGN KEY(model_name) REFERENCES model(name)"
-     ");";
+void DataStore::insertResultEntry(ResultEntry entry) {
+  sqlite3_stmt *stmt;
 
-  char *errmsg;
-  int r = sqlite3_exec(db, sql.c_str(), callback, 0, &errmsg);
-  if(r != SQLITE_OK) {
-    std::cout << "Error: " << errmsg << std::endl;
-    sqlite3_free(errmsg);
+  char *query = sqlite3_mprintf("INSERT INTO result "
+      "(model_name, subject_name, notes, value) "
+      "VALUES ('%q', '%q', '%q', '%f')",
+      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
+  int rc = sqlite3_prepare_v2(db, query,-1, &stmt, 0);
+  if(rc == SQLITE_OK) {
+    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+      switch(rc) {
+        case SQLITE_BUSY:
+          std::cout << "Waiting..." << std::endl;
+          break;
+        case SQLITE_ERROR:
+          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
+          break;
+      }
+    }
   } else {
-    std::cout << "Running..." << std::endl;
+    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
+
+  sqlite3_free(query);
 }
 
 void DataStore::close() {

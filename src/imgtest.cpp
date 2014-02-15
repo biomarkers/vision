@@ -33,6 +33,10 @@ int main(int argc, char **argv) {
 
   DataStore p = DataStore::open("jkk_store.sqlite3");
   p.createTables();
+
+  ResultEntry entry(-1, "My Model", "Bob", "Some notes", 66.6);
+  p.insertResultEntry(entry);
+
   std::vector<ModelEntry> entries = p.findAllModelEntries();
   for(int i = 0; i < entries.size(); i++) {
     std::cout << entries[i].data << std::endl;

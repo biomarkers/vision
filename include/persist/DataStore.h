@@ -18,6 +18,8 @@ public:
   std::vector<ModelEntry> findAllModelEntries();
   std::vector<ResultEntry> findAllResultEntries();
   std::vector<ResultEntry> findResultsForModelName(std::string name);
+
+  void insertResultEntry(ResultEntry entry);
 private:
   DataStore(sqlite3 *db);
 

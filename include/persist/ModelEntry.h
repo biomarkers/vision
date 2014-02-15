@@ -1,6 +1,8 @@
 #ifndef _MODEL_ENTRY_H_
 #define _MODEL_ENTRY_H_
 
+#include <string>
+
 class ModelEntry {
 public:
   std::string name;
