@@ -154,8 +154,8 @@ void DataStore::insertResultEntry(ResultEntry entry) {
   sqlite3_stmt *stmt;
 
   char *query = sqlite3_mprintf("INSERT INTO result "
-      "(model_name, subject_name, notes, value) "
-      "VALUES ('%q', '%q', '%q', '%f')",
+      "(model_name, subject_name, notes, date, value) "
+      "VALUES ('%q', '%q', '%q', 'today', '%f')",
       entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
   int rc = sqlite3_prepare_v2(db, query,-1, &stmt, 0);
   if(rc == SQLITE_OK) {
