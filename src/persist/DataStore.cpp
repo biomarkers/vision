@@ -64,8 +64,6 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
           std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
           break;
         case SQLITE_ROW:
-          int cols = sqlite3_column_count(stmt);
-
           std::string name(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 0)));
           std::string blob(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
 
@@ -95,8 +93,6 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
           std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
           break;
         case SQLITE_ROW:
-          int cols = sqlite3_column_count(stmt);
-
           int id = sqlite3_column_int(stmt, 0);
           std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
           std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
@@ -130,8 +126,6 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
           std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
           break;
         case SQLITE_ROW:
-          int cols = sqlite3_column_count(stmt);
-
           int id = sqlite3_column_int(stmt, 0);
           std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
           std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
