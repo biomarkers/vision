@@ -126,6 +126,7 @@ private:
     template<typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
+        std::cout << "archiving!\n\n";
         (void)version;
         ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mFinalWeights & mModelName & mTestName;
     }

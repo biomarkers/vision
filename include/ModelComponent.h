@@ -4,6 +4,9 @@
 #include <opencv2/core/core.hpp>
 #include <boost/shared_ptr.hpp>
 #include "../include/SerializableMat.h"
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/base_object.hpp>
+
 
 //forward declaration of friend
 class RegressionModel;
@@ -57,6 +60,7 @@ public:
     //add a friend to look at our privates, lulz
     friend class RegressionModel;
 protected:
+    ModelComponent() {}
     //region of frames to analyze between
     float mBegin;
     float mEnd;
@@ -90,39 +94,7 @@ protected:
 //typedef a shared ptr for this class
 typedef boost::shared_ptr<ModelComponent> ComponentPtr;
 
-class LinearRegression : public ModelComponent
-{
-public:
-    LinearRegression(float begin, float end, ModelComponent::VariableType variable);
-    virtual void evaluate(cv::Mat x);
-    virtual float getWeight();
-    virtual ModelType getModelType();
-private:
-};
 
-class PointAnalysis : public ModelComponent
-{
-public:
-    PointAnalysis(float begin, float end, ModelComponent::VariableType variable);
-    virtual void evaluate(cv::Mat x);
-    virtual float getWeight();
-    virtual ModelType getModelType();
-private:
-    float mAvg; //ezmode weight
-};
-
-class ExponentialRegression : public ModelComponent
-{
-public:
-    ExponentialRegression(float begin, float end, ModelComponent::VariableType variable);
-    virtual void evaluate(cv::Mat x);
-    virtual float getWeight();
-    virtual ModelType getModelType();
-private:
-    cv::Mat logMat(cv::Mat x, float percent);
-    float mWeight; //more ezmode weights
-    float mDisp;
-};
 
 
 #endif

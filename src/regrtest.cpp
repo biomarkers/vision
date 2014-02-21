@@ -1,15 +1,22 @@
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 #include "../include/RegressionFactory.h"
 #include "../include/RegressionModel.h"
 //#include "../include/BiomarkerImageProcessor.h"
 
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
 
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
+
+#include "../include/ModelComponents.h"
+BOOST_CLASS_EXPORT_IMPLEMENT(LinearRegression);
+BOOST_CLASS_EXPORT_IMPLEMENT(ExponentialRegression);
+BOOST_CLASS_EXPORT_IMPLEMENT(PointAnalysis);
 
 //read a csv file and return it in a vector of scalars
 std::vector<cv::SerializableScalar> readcsv(std::string fname)
@@ -123,22 +130,67 @@ int main(int argc, char** argv)
     std::cout << shit << "\n\n";
 
     //model->saveToFile();
-
+    std::ostringstream ggnore;
     //factory.loadFromFile(model->GetModelName());
     {
         std::ofstream gg("test.txt");
-        boost::archive::text_oarchive ar(gg);
+
+        boost::archive::binary_oarchive ar(gg);
+        boost::archive::binary_oarchive arn(ggnore);
         ar & model;
+        arn & model;
+    }
+
+    std::string outstring = ggnore.str();
+    const void* nigs = outstring.c_str();
+    unsigned int len = outstring.length();
+
+    std::cout << "len: " << len << "\n\n";
+
+    char* instr = new char[len];
+    memcpy(instr, nigs, len);
+    std::string instring;
+    instring.append(instr, len);
+    std::istringstream ggre;
+    ggre.str(instring);
+
+    if(outstring == instring)
+    {
+        std::cout << "equal\n";
+    }
+    else
+    {
+        std::cout << "not equal\n";
     }
 
     ModelPtr mod2;
     {
         std::ifstream gg("test.txt");
-        boost::archive::text_iarchive ar(gg);
+        boost::archive::binary_iarchive ar(ggre);
         ar & mod2;
     }
 
-
+    result = mod2->evaluate(colors);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = mod2->evaluate(colors1);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = mod2->evaluate(colors2);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = mod2->evaluate(colors3);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = mod2->evaluate(colors4);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = mod2->evaluate(colors5);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
+    result = model->evaluate(colors5);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
 
 
 }

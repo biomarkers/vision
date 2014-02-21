@@ -5,5 +5,5 @@ LDFLAGS=`pkg-config --cflags opencv` `pkg-config --libs opencv sqlite3` -lboost_
 default:
 	$(CXX) $(CXXFLAGS) -o vision src/BiomarkerImageProcessor.cpp src/DataPersistence.cpp src/imgtest.cpp $(LDFLAGS)
 regr:
-	$(CXX) $(CXXFLAGS) -o regression src/SerializableMat.cpp src/SerializableScalar.cpp src/ModelComponent.cpp src/RegressionModel.cpp src/RegressionFactory.cpp src/regrtest.cpp $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o regression src/LinearRegression.cpp src/ExponentialRegression.cpp src/PointAnalysis.cpp src/SerializableMat.cpp src/SerializableScalar.cpp src/ModelComponent.cpp src/RegressionModel.cpp src/RegressionFactory.cpp src/regrtest.cpp $(LDFLAGS)
 

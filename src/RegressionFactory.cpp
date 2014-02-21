@@ -1,6 +1,7 @@
 #include "../include/RegressionFactory.h"
 #include "../include/RegressionModel.h"
 #include "../include/ModelComponent.h"
+#include "../include/ModelComponents.h"
 
 #include <iostream>
 #include <fstream>
