@@ -4,6 +4,8 @@
 #include <boost/timer/timer.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "SerializableScalar.h"
+
 class BiomarkerImageProcessor {
 public:
   BiomarkerImageProcessor();
@@ -12,10 +14,10 @@ public:
   void reset();
 
   /* Process a single input frame and store the result. */
-  cv::Scalar process(cv::Mat frame);
+  cv::SerializableScalar process(cv::Mat frame);
 
   /* Return the list of samples for the current test. */
-  std::vector<cv::Scalar> getSamples() { return samples; }
+  std::vector<cv::SerializableScalar> getSamples() { return samples; }
 
   /* Options */
   bool isCircleDetectionEnabled() { return this->circleDetectionEnabled; }
@@ -27,7 +29,7 @@ public:
 
 private:
   boost::timer::cpu_timer timer;
-  std::vector<cv::Scalar> samples;
+  std::vector<cv::SerializableScalar> samples;
   bool circleDetectionEnabled;
   float circleCenterX, circleCenterY;
   float circleRadius;

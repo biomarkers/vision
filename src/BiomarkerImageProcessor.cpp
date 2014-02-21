@@ -33,7 +33,7 @@ void BiomarkerImageProcessor::reset() {
   samples.clear();
 }
 
-cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
+cv::SerializableScalar BiomarkerImageProcessor::process(cv::Mat frame) {
   cv::Vec3f sampleCircle;
   if(isCircleDetectionEnabled()) {
     sampleCircle = this->findSampleCircle(frame);
@@ -50,9 +50,10 @@ cv::Scalar BiomarkerImageProcessor::process(cv::Mat frame) {
   boost::timer::nanosecond_type const one_second(1 * 1000000000LL);
   sample[3] = (float) timer.elapsed().wall / (float) one_second;
 
-  this->samples.push_back(sample);
+  cv::SerializableScalar ser(sample);
+  this->samples.push_back(ser);
 
-  return sample;
+  return ser;
 }
 
 /*

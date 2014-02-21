@@ -2,7 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "BiomarkerImageProcessor.h"
-#include "DataPersistence.h"
+#include "persist/DataStore.h"
 
 #define FRAME_SKIP 0
 
@@ -31,8 +31,25 @@ int main(int argc, char **argv) {
   cv::namedWindow("img_win", CV_WINDOW_AUTOSIZE);
   cv::VideoCapture cap(argv[1]);
 
-  DataStore p = DataStore::open();
+  DataStore p = DataStore::open("jkk_store.sqlite3");
+  p.createTables();
 
+  ResultEntry entry(-1, "My Model", "Bob", "Some notes", 66.6);
+  p.insertResultEntry(entry);
+
+  std::vector<ModelEntry> entries = p.findAllModelEntries();
+  for(int i = 0; i < entries.size(); i++) {
+    std::cout << entries[i].data << std::endl;
+    std::vector<ResultEntry> results = p.findResultsForModelName(entries[i].name);
+    std::cout << "  Entries: ";
+    for(int j = 0; j < results.size(); j++) {
+      std::cout << results[i].subjectName << ", ";
+    }
+    std::cout << std::endl;
+  }
+  p.close();
+
+  /*
   cv::Mat frame;
   // skipNFrames(cap, 8730, &frame);
   while(true) {
@@ -52,6 +69,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
+  */
 
   return 0;
 }
