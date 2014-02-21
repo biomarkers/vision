@@ -1,3 +1,8 @@
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include "../include/RegressionFactory.h"
 #include "../include/RegressionModel.h"
 #include "../include/ModelComponent.h"
@@ -6,25 +11,41 @@
 #include <iostream>
 #include <fstream>
 
-ModelPtr RegressionFactory::loadFromFile(std::string filename)
-{
-    std::cout << "Functionality not implemented\n";
-    std::ifstream ggin;
-    ggin.open(filename.c_str());
-    if(ggin.is_open())
-    {
-        std::cout << "Success!";
-        ggin.close();
-    }
-    else
-    {
-        std::cout << "fuck you kyle\n\n\n\n\n\n\n";
-    }
+BOOST_CLASS_EXPORT_IMPLEMENT(LinearRegression);
+BOOST_CLASS_EXPORT_IMPLEMENT(ExponentialRegression);
+BOOST_CLASS_EXPORT_IMPLEMENT(PointAnalysis);
 
-    (void)filename;
-    ModelPtr blank;
-    return blank;
+ModelPtr RegressionFactory::deserializeFromDB(const void* str, unsigned int len)
+{
+    ModelPtr model;
+
+    char* instr = new char[len];
+    memcpy(instr, str, len);
+    std::string instring;
+    instring.append(instr, len);
+    std::istringstream ggre;
+    ggre.str(instring);
+
+    boost::archive::binary_iarchive ar(ggre);
+    ar & model;
+
+    free(instr);
+
+    return model;
 }
+
+void RegressionFactory::serializeToDB(ModelPtr model, const void* &blob, unsigned int &len)
+{
+    std::ostringstream ggnore;
+
+    boost::archive::binary_oarchive ar(ggnore);
+    ar & model;
+
+    mOutstring = ggnore.str();
+    blob = mOutstring.c_str();
+    len = mOutstring.length();
+}
+
 
 void RegressionFactory::createNew(std::string modelName, std::string testName)
 {

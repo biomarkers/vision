@@ -6,8 +6,11 @@
 
 
 class RegressionFactory{
-public:    
-    ModelPtr loadFromFile(std::string filename);
+public:
+
+    ModelPtr deserializeFromDB(const void* str, unsigned int len);
+
+    void serializeToDB(ModelPtr model, const void* &blob, unsigned int &len);
 
     void createNew(std::string modelName, std::string testName);
 
@@ -19,6 +22,8 @@ public:
 private:
     ModelPtr mTempModel;
 
+
+    std::string mOutstring;
     //std::string mBasepath;
 };
 
