@@ -6,9 +6,10 @@
 class ModelEntry {
 public:
   std::string name;
-  std::string data;
+  const void *data;
+  int length;
 
-  ModelEntry(std::string name, std::string data) : name(name), data(data) { }
+  ModelEntry(std::string name, const void *data, int length) : name(name), data(data), length(length) { }
 };
 
 #endif

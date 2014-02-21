@@ -1,5 +1,7 @@
 #include "persist/DataStore.h"
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 DataStore::DataStore(sqlite3 *db) : db(db) {}
@@ -52,27 +54,20 @@ void DataStore::createTables() {
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
   std::vector<ModelEntry> entries;
 
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db, "select name, data from model", -1, &stmt, 0);
-  if(rc == SQLITE_OK) {
-    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
-      switch(rc) {
-        case SQLITE_BUSY:
-          std::cout << "Waiting..." << std::endl;
-          break;
-        case SQLITE_ERROR:
-          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
-          break;
-        case SQLITE_ROW:
-          std::string name(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 0)));
-          std::string blob(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+  const char *q = "select name, data from model";
+  sqlite3_stmt *stmt = query(q);
 
-          entries.push_back(ModelEntry(name, blob));
-          break;
-      }
+  int rc;
+  while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+    switch(rc) {
+      case SQLITE_ROW:
+        std::string name(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 0)));
+        int len = sqlite3_column_bytes(stmt, 1);
+        void *data = std::malloc(len);
+        std::memcpy(data, sqlite3_column_blob(stmt, 1), len);
+        entries.push_back(ModelEntry(name, data, len));
+        break;
     }
-  } else {
-    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
 
   return entries;
@@ -81,31 +76,23 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
 std::vector<ResultEntry> DataStore::findAllResultEntries() {
   std::vector<ResultEntry> entries;
 
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db, "select id, model_name, subject_name, notes, date, value from result", -1, &stmt, 0);
-  if(rc == SQLITE_OK) {
-    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
-      switch(rc) {
-        case SQLITE_BUSY:
-          std::cout << "Waiting..." << std::endl;
-          break;
-        case SQLITE_ERROR:
-          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
-          break;
-        case SQLITE_ROW:
-          int id = sqlite3_column_int(stmt, 0);
-          std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
-          std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
-          std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
-          std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
-          double value = sqlite3_column_double(stmt, 5);
+  const char *q = "select id, model_name, subject_name, notes, date, value from result";
+  sqlite3_stmt *stmt = query(q);
 
-          entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
-          break;
-      }
+  int rc;
+  while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+    switch(rc) {
+      case SQLITE_ROW:
+        int id = sqlite3_column_int(stmt, 0);
+        std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+        std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+        std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
+        std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
+        double value = sqlite3_column_double(stmt, 5);
+
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        break;
     }
-  } else {
-    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
 
   return entries;
@@ -114,60 +101,61 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
 std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelName) {
   std::vector<ResultEntry> entries;
 
-  sqlite3_stmt *stmt;
-  int rc = sqlite3_prepare_v2(db, ("select id, model_name, subject_name, notes, date, value from result where model_name = '" + modelName + "'").c_str(), -1, &stmt, 0);
-  if(rc == SQLITE_OK) {
-    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
-      switch(rc) {
-        case SQLITE_BUSY:
-          std::cout << "Waiting..." << std::endl;
-          break;
-        case SQLITE_ERROR:
-          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
-          break;
-        case SQLITE_ROW:
-          int id = sqlite3_column_int(stmt, 0);
-          std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
-          std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
-          std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
-          std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
-          double value = sqlite3_column_double(stmt, 5);
+  const char *q = ("select id, model_name, subject_name, notes, date, value from result where model_name = '" + modelName + "'").c_str();
+  sqlite3_stmt *stmt = query(q);
 
-          entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
-          break;
-      }
+  int rc;
+  while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+    switch(rc) {
+      case SQLITE_ROW:
+        int id = sqlite3_column_int(stmt, 0);
+        std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+        std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+        std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
+        std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
+        double value = sqlite3_column_double(stmt, 5);
+
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        break;
     }
-  } else {
-    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
 
   return entries;
 }
 
+void DataStore::insertModelEntry(ModelEntry entry) {
+  const char *q = "INSERT INTO model" "(name, data) " "VALUES (?, ?)";
+
+  sqlite3_stmt *stmt;
+  int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
+  sqlite3_bind_text(stmt, 1, entry.name.c_str(), -1, NULL);
+  sqlite3_bind_blob(stmt, 2, entry.data, entry.length, NULL);
+
+  if(rc != SQLITE_OK) {
+    std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
+  }
+}
+
 void DataStore::insertResultEntry(ResultEntry entry) {
   sqlite3_stmt *stmt;
 
-  char *query = sqlite3_mprintf("INSERT INTO result "
+  const char *q = sqlite3_mprintf("INSERT INTO result "
       "(model_name, subject_name, notes, date, value) "
       "VALUES ('%q', '%q', '%q', 'today', '%f')",
       entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
-  int rc = sqlite3_prepare_v2(db, query,-1, &stmt, 0);
-  if(rc == SQLITE_OK) {
-    while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
-      switch(rc) {
-        case SQLITE_BUSY:
-          std::cout << "Waiting..." << std::endl;
-          break;
-        case SQLITE_ERROR:
-          std::cerr << "Error: " << sqlite3_errmsg(db) << std::endl;
-          break;
-      }
-    }
-  } else {
+  query(q);
+  // sqlite3_free(q);
+}
+
+sqlite3_stmt *DataStore::query(const char *q) {
+  sqlite3_stmt *stmt;
+  int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
+  if(rc != SQLITE_OK) {
     std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
+    return NULL;
   }
 
-  sqlite3_free(query);
+  return stmt;
 }
 
 void DataStore::close() {

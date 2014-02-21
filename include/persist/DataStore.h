@@ -19,9 +19,12 @@ public:
   std::vector<ResultEntry> findAllResultEntries();
   std::vector<ResultEntry> findResultsForModelName(std::string name);
 
+  void insertModelEntry(ModelEntry entry);
   void insertResultEntry(ResultEntry entry);
 private:
   DataStore(sqlite3 *db);
+
+  sqlite3_stmt *query(const char *q);
 
   sqlite3 *db;
 };
