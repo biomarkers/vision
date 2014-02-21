@@ -8,7 +8,7 @@
 class RegressionFactory{
 public:
 
-    ModelPtr deserializeFromDB(const void* str, unsigned int len);
+    ModelPtr deserializeFromDB(const void* blob, unsigned int len);
 
     void serializeToDB(ModelPtr model, const void* &blob, unsigned int &len);
 

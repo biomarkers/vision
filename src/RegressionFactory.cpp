@@ -15,7 +15,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(LinearRegression);
 BOOST_CLASS_EXPORT_IMPLEMENT(ExponentialRegression);
 BOOST_CLASS_EXPORT_IMPLEMENT(PointAnalysis);
 
-ModelPtr RegressionFactory::deserializeFromDB(const void* str, unsigned int len)
+ModelPtr RegressionFactory::deserializeFromDB(const void* blob, unsigned int len)
 {
     ModelPtr model;
 
