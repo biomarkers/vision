@@ -20,7 +20,7 @@ ModelPtr RegressionFactory::deserializeFromDB(const void* blob, unsigned int len
     ModelPtr model;
 
     char* instr = new char[len];
-    memcpy(instr, str, len);
+    memcpy(instr, blob, len);
     std::string instring;
     instring.append(instr, len);
     std::istringstream ggre;
@@ -41,6 +41,7 @@ void RegressionFactory::serializeToDB(ModelPtr model, const void* &blob, unsigne
     boost::archive::binary_oarchive ar(ggnore);
     ar & model;
 
+    mOutstring.clear();
     mOutstring = ggnore.str();
     blob = mOutstring.c_str();
     len = mOutstring.length();
