@@ -26,7 +26,7 @@ int callback(void * param, int argc, char **argv, char **azColName) {
 }
 
 void DataStore::createTables() {
-  std::string sql =
+  const char *q =
     "CREATE TABLE IF NOT EXISTS model ("
        "name CHAR(50) PRIMARY KEY,"
        "data BLOB"
@@ -40,15 +40,8 @@ void DataStore::createTables() {
        "value REAL,"
        "FOREIGN KEY(model_name) REFERENCES model(name)"
      ");";
-
-  char *errmsg;
-  int r = sqlite3_exec(db, sql.c_str(), callback, 0, &errmsg);
-  if(r != SQLITE_OK) {
-    std::cout << "Error: " << errmsg << std::endl;
-    sqlite3_free(errmsg);
-  } else {
-    std::cout << "Running..." << std::endl;
-  }
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
 }
 
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
@@ -126,10 +119,12 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
 void DataStore::insertModelEntry(ModelEntry entry) {
   const char *q = "INSERT INTO model" "(name, data) " "VALUES (?, ?)";
 
-  sqlite3_stmt *stmt;
+  sqlite3_stmt *stmt = query(q);
   int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
   sqlite3_bind_text(stmt, 1, entry.name.c_str(), -1, NULL);
   sqlite3_bind_blob(stmt, 2, entry.data, entry.length, NULL);
+
+  sqlite3_step(stmt);
 
   if(rc != SQLITE_OK) {
     std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
@@ -137,13 +132,14 @@ void DataStore::insertModelEntry(ModelEntry entry) {
 }
 
 void DataStore::insertResultEntry(ResultEntry entry) {
-  sqlite3_stmt *stmt;
-
   const char *q = sqlite3_mprintf("INSERT INTO result "
       "(model_name, subject_name, notes, date, value) "
       "VALUES ('%q', '%q', '%q', 'today', '%f')",
       entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
   query(q);
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
   // sqlite3_free(q);
 }
 

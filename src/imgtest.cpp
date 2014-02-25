@@ -51,12 +51,12 @@ int main(int argc, char **argv) {
 
   ModelPtr myModel = factory.getCreatedModel();
 
-  // const void *blob;
-  // unsigned int len;
-  // factory.serializeToDB(myModel, blob, len);
+  const void *blob;
+  unsigned int len;
+  factory.serializeToDB(myModel, blob, len);
 
-  // ModelEntry mod(myModel->GetModelName(), blob, len);
-  // p.insertModelEntry(mod);
+  ModelEntry mod(myModel->GetModelName(), blob, len);
+  p.insertModelEntry(mod);
 
 
   std::vector<ModelEntry> entries = p.findAllModelEntries();
