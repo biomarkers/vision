@@ -122,11 +122,14 @@ int main(int argc, char** argv)
 
     const void* blob;
     unsigned int len;
+
     factory.serializeToDB(model, blob, len);
-
-
-    ModelPtr mod2;
-    mod2 = factory.deserializeFromDB(blob, len);
+    ModelPtr mod3;
+    mod3 = factory.deserializeFromDB(blob, len);
+    factory.serializeToDB(mod3, blob, len);
+    ModelPtr mod4 = factory.deserializeFromDB(blob, len);
+    factory.serializeToDB(mod4, blob, len);
+    ModelPtr mod2 = factory.deserializeFromDB(blob, len);
 
     result = mod2->evaluate(colors);
     std::cout << "\n---------------------\nResult: " << result
