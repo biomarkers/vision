@@ -30,7 +30,11 @@ void DataStore::createTables() {
     "CREATE TABLE IF NOT EXISTS model ("
        "name CHAR(50) PRIMARY KEY,"
        "data BLOB"
-     ");"
+     ");";
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  const char *q2 =
      "CREATE TABLE IF NOT EXISTS result ("
        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
        "model_name CHAR(50),"
@@ -40,8 +44,9 @@ void DataStore::createTables() {
        "value REAL,"
        "FOREIGN KEY(model_name) REFERENCES model(name)"
      ");";
-  sqlite3_stmt *stmt = query(q);
-  sqlite3_step(stmt);
+
+  sqlite3_stmt *stmt2 = query(q2);
+  sqlite3_step(stmt2);
 }
 
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
