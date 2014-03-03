@@ -15,16 +15,6 @@ DataStore DataStore::open(std::string db_path) {
   return DataStore(db);
 }
 
-int callback(void * param, int argc, char **argv, char **azColName) {
-  std::cout << "Got data!" << std::endl;
-
-  for(int i = 0; i < argc; i++) {
-    std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
-  }
-
-  return 0;
-}
-
 void DataStore::createTables() {
   const char *q =
     "CREATE TABLE IF NOT EXISTS model ("
@@ -47,6 +37,10 @@ void DataStore::createTables() {
 
   sqlite3_stmt *stmt2 = query(q2);
   sqlite3_step(stmt2);
+}
+
+void DataStore::close() {
+  sqlite3_close(db);
 }
 
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
@@ -159,6 +153,3 @@ sqlite3_stmt *DataStore::query(const char *q) {
   return stmt;
 }
 
-void DataStore::close() {
-  sqlite3_close(db);
-}

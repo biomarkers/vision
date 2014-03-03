@@ -10,9 +10,14 @@
 
 class DataStore {
 public:
+  /* Open a database file. If it does not exist, it will be created. */
   static DataStore open(std::string db_path);
 
+  /* Create the database schema. If the schema already exists, nothing will be
+   * changed. */
   void createTables();
+
+  /* Close the database file. */
   void close();
 
   std::vector<ModelEntry> findAllModelEntries();
