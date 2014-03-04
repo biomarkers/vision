@@ -24,6 +24,8 @@ void DataStore::createTables() {
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
 
+  sqlite3_finalize(stmt);
+
   const char *q2 =
      "CREATE TABLE IF NOT EXISTS result ("
        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -37,6 +39,8 @@ void DataStore::createTables() {
 
   sqlite3_stmt *stmt2 = query(q2);
   sqlite3_step(stmt2);
+
+  sqlite3_finalize(stmt2);
 }
 
 void DataStore::close() {
@@ -61,6 +65,8 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
         break;
     }
   }
+
+  sqlite3_finalize(stmt);
 
   return entries;
 }
@@ -87,13 +93,15 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
     }
   }
 
+  sqlite3_finalize(stmt);
+
   return entries;
 }
 
 std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelName) {
   std::vector<ResultEntry> entries;
 
-  const char *q = ("select id, model_name, subject_name, notes, date, value from result where model_name = '" + modelName + "'").c_str();
+  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value from result where model_name = '%q'", modelName.c_str());
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -112,11 +120,14 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
     }
   }
 
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
+
   return entries;
 }
 
 void DataStore::insertModelEntry(ModelEntry entry) {
-  const char *q = "INSERT INTO model" "(name, data) " "VALUES (?, ?)";
+  const char *q = "insert into model (name, data) values (?, ?)";
 
   sqlite3_stmt *stmt = query(q);
   int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
