@@ -128,18 +128,41 @@ void DataStore::insertModelEntry(ModelEntry entry) {
   if(rc != SQLITE_OK) {
     std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
+
+  sqlite3_finalize(stmt);
 }
 
 void DataStore::insertResultEntry(ResultEntry entry) {
-  const char *q = sqlite3_mprintf("INSERT INTO result "
+  const char *q = sqlite3_mprintf("insert into result "
       "(model_name, subject_name, notes, date, value) "
-      "VALUES ('%q', '%q', '%q', 'today', '%f')",
+      "values ('%q', '%q', '%q', 'today', %f)",
       entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
-  query(q);
+
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
 
-  // sqlite3_free(q);
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
+}
+
+void DataStore::deleteModelEntry(std::string name) {
+  const char *q = sqlite3_mprintf("delete from model where name = '%q'", name.c_str());
+
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
+}
+
+void DataStore::deleteResultEntry(int id) {
+  const char *q = sqlite3_mprintf("delete from result where id = %d", id);
+
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
 }
 
 sqlite3_stmt *DataStore::query(const char *q) {

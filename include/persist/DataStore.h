@@ -26,6 +26,9 @@ public:
 
   void insertModelEntry(ModelEntry entry);
   void insertResultEntry(ResultEntry entry);
+
+  void deleteModelEntry(std::string name);
+  void deleteResultEntry(int id);
 private:
   DataStore(sqlite3 *db);
 
