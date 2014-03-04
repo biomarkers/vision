@@ -32,9 +32,9 @@ public:
 private:
   boost::timer::cpu_timer timer;
   std::vector<cv::SerializableScalar> samples;
-  bool circleDetectionEnabled;
   float circleCenterX, circleCenterY;
   float circleRadius;
+  bool circleDetectionEnabled;
 
   cv::Vec3f findSampleCircle(cv::Mat frame);
   cv::Scalar sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle);
