@@ -24,8 +24,10 @@ public:
   void setCircleDetectionEnabled(bool c) { this->circleDetectionEnabled = c; }
   float getCircleCenterX() { return this->circleCenterX; }
   float getCircleCenterY() { return this->circleCenterY; }
+  float getCircleRadius() { return this->circleRadius; }
   void setCircleCenterX(float x) { this->circleCenterX = x; }
   void setCircleCenterY(float y) { this->circleCenterY = y; }
+  void setCircleRadius(float r) { this->circleRadius = r; }
 
 private:
   boost::timer::cpu_timer timer;
