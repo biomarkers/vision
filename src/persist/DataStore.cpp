@@ -50,7 +50,7 @@ void DataStore::close() {
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
   std::vector<ModelEntry> entries;
 
-  const char *q = "select name, data from model";
+  const char *q = "select name, data from model order by name desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -74,7 +74,7 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
 std::vector<ResultEntry> DataStore::findAllResultEntries() {
   std::vector<ResultEntry> entries;
 
-  const char *q = "select id, model_name, subject_name, notes, date, value from result";
+  const char *q = "select id, model_name, subject_name, notes, date, value from result order by date desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -88,7 +88,7 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
         break;
     }
   }
@@ -115,7 +115,7 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
         break;
     }
   }
@@ -146,8 +146,8 @@ void DataStore::insertModelEntry(ModelEntry entry) {
 void DataStore::insertResultEntry(ResultEntry entry) {
   const char *q = sqlite3_mprintf("insert into result "
       "(model_name, subject_name, notes, date, value) "
-      "values ('%q', '%q', '%q', 'today', %f)",
-      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
+      "values ('%q', '%q', '%q', '%q', %f)",
+      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value);
 
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
