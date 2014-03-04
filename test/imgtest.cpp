@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
   ModelEntry mod(myModel->GetModelName(), blob, len);
   p.insertModelEntry(mod);
 
+  p.deleteModelEntry("mymodel_ser");
 
   std::vector<ModelEntry> entries = p.findAllModelEntries();
   for(int i = 0; i < entries.size(); i++) {
