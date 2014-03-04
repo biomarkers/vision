@@ -16,11 +16,6 @@
 #define DEFAULT_CIRCLE_CENTER_Y      237.5
 #define DEFAULT_CIRCLE_RADIUS        30.0
 
-/* Enable or disable circle detection. Will use predefined values above if
- * disabled.
- */
-// #define CIRCLE_DETECTION
-
 BiomarkerImageProcessor::BiomarkerImageProcessor() :
   circleCenterX(DEFAULT_CIRCLE_CENTER_X),
   circleCenterY(DEFAULT_CIRCLE_CENTER_Y),
