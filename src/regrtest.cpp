@@ -60,6 +60,8 @@ int main(int argc, char** argv)
     std::cout << "Jollies!\n";
 
     ModelPtr model;
+    ModelPtr testmodel;
+
 
     RegressionFactory factory;
 
@@ -95,26 +97,27 @@ int main(int argc, char** argv)
     colors3 = readcsv("etc/300mg.csv");
     model->calibrate(colors3, 300);
     colors4 = readcsv("etc/400mg.csv");
+    float laterresult = model->evaluate(colors4);
     model->calibrate(colors4, 400);
     colors5 = readcsv("etc/unknown.csv");
 
     float result = model->evaluate(colors);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors1);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors2);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors3);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors4);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors5);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
 
     cv::Mat shit = model->getRawCalData();
@@ -134,24 +137,14 @@ int main(int argc, char** argv)
     result = mod2->evaluate(colors);
     std::cout << "\n---------------------\nResult: " << result
               << "\n---------------------\n";
-    result = mod2->evaluate(colors1);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
-    result = mod2->evaluate(colors2);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
-    result = mod2->evaluate(colors3);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
-    result = mod2->evaluate(colors4);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
-    result = mod2->evaluate(colors5);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
-    result = model->evaluate(colors5);
-    std::cout << "\n---------------------\nResult: " << result
-              << "\n---------------------\n";
 
+    model->chuckLastCalibration();
+    result = model->evaluate(colors4);
+    std::cout << "\n---------------------\nResult: " << result << "~~" << laterresult
+              << "\n---------------------\n";
+    model->calibrate(colors4, 400);
+    result = model->evaluate(colors4);
+    std::cout << "\n---------------------\nResult: " << result
+              << "\n---------------------\n";
 
 }
