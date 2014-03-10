@@ -18,6 +18,7 @@ public:
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
+    virtual std::string getStatString();
 private:
     ExponentialRegression(){}
     cv::Mat logMat(cv::Mat x, float percent);

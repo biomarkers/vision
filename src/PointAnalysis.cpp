@@ -1,4 +1,5 @@
 #include <math.h>
+#include <iostream>
 #include "../include/PointAnalysis.h"
 #include "../include/SerializableScalar.h"
 
@@ -15,17 +16,30 @@ void PointAnalysis::evaluate(cv::Mat x)
 {
     x = cutToSize(x);
     int height = x.size().height;
+
+    //r2 value will instead be standard dev, sigma
+    float sem = getSquaredFromMean(x);
+    sem /= height;
+    sem = sqrt(sem);
+    mR2 = (sem);
+
     mAvg = 0;
     for(int c = 0; c < height; c++)
     {
-        mAvg += x.row(c).at<float>(0);
+        mAvg += (x.row(c).at<float>(0) / height);
     }
-    mAvg /= (float)(height);
 }
 
 float PointAnalysis::getWeight()
 {
     return mAvg;
+}
+
+std::string PointAnalysis::getStatString()
+{
+    std::ostringstream data;
+    data << "Point Analysis Standard Deviation = " << mR2 << "\n";
+    return data.str();
 }
 
 ModelComponent::ModelType PointAnalysis::getModelType()

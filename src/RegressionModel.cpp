@@ -27,34 +27,6 @@ ModelPtr RegressionModel::loadFromFile(std::string filename)
     return blank;
 }
 
-//serialize the object to a file
-void RegressionModel::saveToFile()
-{
-    std::ofstream gg;
-    gg.open(mModelName.c_str());
-
-    gg << mRed << std::endl;
-    gg << mGreen << std::endl;
-    gg << mBlue << std::endl;
-    gg << mHue << std::endl;
-    gg << mTime << std::endl;
-
-    /*
-    gg << mComponents.size() << std::endl;
-
-    gg << mComponents << std::endl;
-
-    gg << mCalibrationData << std::endl;
-
-    gg << mRawCalibrationData << std::endl;
-
-    gg << mFinalWeights << std::endl;
-
-    gg << mTestName;
-    */
-    gg.close();
-}
-
 //add a calibration point to the model
 void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
                float calibrationValue)
@@ -127,6 +99,16 @@ std::string RegressionModel::GetTestName()
     return mTestName;
 }
 
+std::string RegressionModel::getStatData()
+{
+    std::string data;
+    for(int c = 0; c < mComponents.size(); c++)
+    {
+        data.append(mComponents[c]->getStatString());
+    }
+    return data;
+}
+
 //have at least two calibration runs been done?
 bool RegressionModel::isCalibrated()
 {
@@ -172,12 +154,6 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
 {
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
-
-    //for exp regr
-    //float r1, r2;
-    //r1 = mFinalWeights.row(0).at<float>(0);
-    //r2 = mFinalWeights.row(1).at<float>(0);
-    //result.at<float>(0) = exp(r2) + r1;
 
     return result.at<float>(0);
 }
@@ -238,6 +214,15 @@ cv::Mat RegressionModel::getModelWeights()
     //std::cout << "GettingWeights: " << weights << std::endl;
     return weights;
 }
+
+//throw away last calibration run
+void RegressionModel::chuckLastCalibration()
+{
+    //int cals = mCalibrationData.size().height;
+    mCalibrationData.pop_back();
+    dryCalibrate();
+}
+
 
 
 

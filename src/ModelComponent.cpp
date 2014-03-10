@@ -4,7 +4,7 @@
 
 
 ModelComponent::ModelComponent(float begin, float end, VariableType variable) :
-    mBegin(begin), mEnd(end), mWeights(), mVar(variable)
+    mBegin(begin), mEnd(end), mWeights(), mR2(), mVar(variable)
 {
     //no construction
 }
@@ -45,6 +45,24 @@ cv::Mat ModelComponent::cutToSize(cv::Mat x)
     return out;
 }
 
+float ModelComponent::getSquaredFromMean(cv::Mat x)
+{
+    float mean = 0;
+    for(int c = 0; c < x.size().height; c++)
+    {
+        mean += (x.row(c).at<float>(0) / (float)x.size().height);
+    }
 
+    //std::cout << "MEAN: " << mean << "\n";
+
+    float se = 0;
+    for(int c = 0; c < x.size().height; c++)
+    {
+        se += (pow(mean - x.row(c).at<float>(0), 2.f));
+    }
+
+    //std::cout << "ERR FROM MEAN ^2: " << se << "\n";
+    return se;
+}
 
 

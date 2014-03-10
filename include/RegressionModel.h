@@ -36,9 +36,6 @@ public:
     //static file loader
     static ModelPtr loadFromFile(std::string filename);
 
-    //serialize the object to a file
-    void saveToFile();
-
     //add a calibration point to the model
     void calibrate(std::vector<cv::SerializableScalar> colors,
                    float calibrationValue);
@@ -67,6 +64,12 @@ public:
     //name of substance being tested
     std::string GetTestName();
 
+    //get string with statistical data about last test run
+    std::string getStatData();
+
+    //throw away last calibration run
+    void chuckLastCalibration();
+
     //have at least two calibration runs been done?
     bool isCalibrated();
 
@@ -91,8 +94,6 @@ private:
 
     //get a row vector of run results
     cv::Mat getModelWeights();
-
-    //print out a vector
 
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mHue, mTime;

@@ -146,5 +146,4 @@ int main(int argc, char** argv)
     result = model->evaluate(colors4);
     std::cout << "\n---------------------\nResult: " << result
               << "\n---------------------\n";
-
 }

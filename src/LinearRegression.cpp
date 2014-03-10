@@ -1,5 +1,6 @@
 #include "../include/LinearRegression.h"
 #include <math.h>
+#include <iostream>
 #include "../include/SerializableScalar.h"
 
 //BOOST_CLASS_EXPORT_IMPLEMENT(LinearRegression);
@@ -15,6 +16,8 @@ void LinearRegression::evaluate(cv::Mat x)
 {
     x = cutToSize(x);
 
+    float sem = getSquaredFromMean(x);
+
     cv::Mat weights(1, x.size().width, CV_32F);
     cv::Mat dependent(x.size().height, 1, CV_32F);
     cv::Mat independent(x.size().height, x.size().width, CV_32F, 1.f);
@@ -27,6 +30,18 @@ void LinearRegression::evaluate(cv::Mat x)
 
     weights = (independent.t() * independent).inv() * independent.t() * dependent;
 
+    float se = 0;
+    float val;
+    for(int c = 0; c < x.size().height; c++)
+    {
+        cv::Mat jj = weights.t() * independent.row(c).t();
+        //if(c < 11)
+            //std::cout << jj << "\n";
+        val = jj.at<float>(0);
+        se += pow(val - dependent.row(c).at<float>(0), 2.f);
+    }
+    mR2 = (1-se/sem);
+
     mWeights = weights;
 }
 
@@ -37,6 +52,13 @@ float LinearRegression::getWeight()
     else
         return 0; //should throw some error here, get around to that later
 
+}
+
+std::string LinearRegression::getStatString()
+{
+    std::ostringstream data;
+    data << "Linear Regression Component R^2 = " << mR2 << "\n";
+    return data.str();
 }
 
 ModelComponent::ModelType LinearRegression::getModelType()

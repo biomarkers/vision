@@ -17,6 +17,7 @@ public:
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
+    virtual std::string getStatString();
 private:
 
     friend class boost::serialization::access;

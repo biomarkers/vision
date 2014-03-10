@@ -4,6 +4,7 @@
 #include <opencv2/core/core.hpp>
 #include <boost/shared_ptr.hpp>
 #include "../include/SerializableMat.h"
+#include <vector>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/base_object.hpp>
 
@@ -35,6 +36,9 @@ public:
     //concrete classes must implement this-
     //obtain the results of the regression, for now just a float
     virtual float getWeight() = 0;
+
+    //get stat data from last run
+    virtual std::string getStatString() = 0;
 
     //enumerate the types of model components available
     enum ModelType{
@@ -68,6 +72,9 @@ protected:
     //weights
     cv::SerializableMat mWeights;
 
+    //r^2 values
+    float mR2;
+
     //variable to be tested
     VariableType mVar;
 
@@ -81,13 +88,16 @@ protected:
     //range [mBegin, mEnd]
     cv::Mat cutToSize(cv::Mat x);
 
+    //grab sum( (yi - mean)^2) from mat
+    float getSquaredFromMean(cv::Mat x);
+
     friend class boost::serialization::access;
 
     template<typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
         (void)version;
-        ar & mBegin & mEnd & mWeights & mVar;
+        ar & mBegin & mEnd & mWeights & mR2 & mVar;
     }
 };
 

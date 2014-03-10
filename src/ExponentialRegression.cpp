@@ -2,6 +2,7 @@
 #include "../include/SerializableScalar.h"
 #include "../include/LinearRegression.h"
 #include <math.h>
+#include <iostream>
 
 //BOOST_CLASS_EXPORT_IMPLEMENT(ExponentialRegression);
 
@@ -14,11 +15,22 @@ ExponentialRegression::ExponentialRegression(float begin, float end, ModelCompon
 void ExponentialRegression::evaluate(cv::Mat x)
 {
     x = cutToSize(x);
-    x = logMat(x, .98);
+    float sem = getSquaredFromMean(x);
+    cv::Mat y;
+    y = logMat(x, .98);
 
-    ModelComponent* linearModel = new LinearRegression(mBegin, mEnd, mVar);
-    linearModel->evaluate(x);
+    ComponentPtr linearModel(new LinearRegression(mBegin, mEnd, mVar));
+    linearModel->evaluate(y);
     mWeight = linearModel->getWeight();
+
+    float se = 0;
+    float val;
+    for(int c = 0; c < x.size().height; c++)
+    {
+        val = exp(mWeight * x.row(c).at<float>(1)) + mDisp;
+        se += pow(val - x.row(c).at<float>(0), 2.f);
+    }
+    mR2 = (1.f - se/sem);
 
     mWeights = cv::Mat(2,1,CV_32F,0.f);
     mWeights.row(0).at<float>(0) = mDisp;
@@ -63,6 +75,13 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
 
     return out;
 
+}
+
+std::string ExponentialRegression::getStatString()
+{
+    std::ostringstream data;
+    data << "Exponential Regression Component R^2 = " << mR2 << "\n";
+    return data.str();
 }
 
 float ExponentialRegression::getWeight()
