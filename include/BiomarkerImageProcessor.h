@@ -24,15 +24,17 @@ public:
   void setCircleDetectionEnabled(bool c) { this->circleDetectionEnabled = c; }
   float getCircleCenterX() { return this->circleCenterX; }
   float getCircleCenterY() { return this->circleCenterY; }
+  float getCircleRadius() { return this->circleRadius; }
   void setCircleCenterX(float x) { this->circleCenterX = x; }
   void setCircleCenterY(float y) { this->circleCenterY = y; }
+  void setCircleRadius(float r) { this->circleRadius = r; }
 
 private:
   boost::timer::cpu_timer timer;
   std::vector<cv::SerializableScalar> samples;
-  bool circleDetectionEnabled;
   float circleCenterX, circleCenterY;
   float circleRadius;
+  bool circleDetectionEnabled;
 
   cv::Vec3f findSampleCircle(cv::Mat frame);
   cv::Scalar sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle);

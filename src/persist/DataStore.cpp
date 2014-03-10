@@ -15,22 +15,18 @@ DataStore DataStore::open(std::string db_path) {
   return DataStore(db);
 }
 
-int callback(void * param, int argc, char **argv, char **azColName) {
-  std::cout << "Got data!" << std::endl;
-
-  for(int i = 0; i < argc; i++) {
-    std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << std::endl;
-  }
-
-  return 0;
-}
-
 void DataStore::createTables() {
-  std::string sql =
+  const char *q =
     "CREATE TABLE IF NOT EXISTS model ("
        "name CHAR(50) PRIMARY KEY,"
        "data BLOB"
-     ");"
+     ");";
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_finalize(stmt);
+
+  const char *q2 =
      "CREATE TABLE IF NOT EXISTS result ("
        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
        "model_name CHAR(50),"
@@ -41,20 +37,20 @@ void DataStore::createTables() {
        "FOREIGN KEY(model_name) REFERENCES model(name)"
      ");";
 
-  char *errmsg;
-  int r = sqlite3_exec(db, sql.c_str(), callback, 0, &errmsg);
-  if(r != SQLITE_OK) {
-    std::cout << "Error: " << errmsg << std::endl;
-    sqlite3_free(errmsg);
-  } else {
-    std::cout << "Running..." << std::endl;
-  }
+  sqlite3_stmt *stmt2 = query(q2);
+  sqlite3_step(stmt2);
+
+  sqlite3_finalize(stmt2);
+}
+
+void DataStore::close() {
+  sqlite3_close(db);
 }
 
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
   std::vector<ModelEntry> entries;
 
-  const char *q = "select name, data from model";
+  const char *q = "select name, data from model order by name desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -70,13 +66,15 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
     }
   }
 
+  sqlite3_finalize(stmt);
+
   return entries;
 }
 
 std::vector<ResultEntry> DataStore::findAllResultEntries() {
   std::vector<ResultEntry> entries;
 
-  const char *q = "select id, model_name, subject_name, notes, date, value from result";
+  const char *q = "select id, model_name, subject_name, notes, date, value from result order by date desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -90,10 +88,12 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
         break;
     }
   }
+
+  sqlite3_finalize(stmt);
 
   return entries;
 }
@@ -101,7 +101,7 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
 std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelName) {
   std::vector<ResultEntry> entries;
 
-  const char *q = ("select id, model_name, subject_name, notes, date, value from result where model_name = '" + modelName + "'").c_str();
+  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value from result where model_name = '%q'", modelName.c_str());
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -115,36 +115,65 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
         break;
     }
   }
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
 
   return entries;
 }
 
 void DataStore::insertModelEntry(ModelEntry entry) {
-  const char *q = "INSERT INTO model" "(name, data) " "VALUES (?, ?)";
+  const char *q = "insert into model (name, data) values (?, ?)";
 
-  sqlite3_stmt *stmt;
+  sqlite3_stmt *stmt = query(q);
   int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
   sqlite3_bind_text(stmt, 1, entry.name.c_str(), -1, NULL);
   sqlite3_bind_blob(stmt, 2, entry.data, entry.length, NULL);
 
+  sqlite3_step(stmt);
+
   if(rc != SQLITE_OK) {
     std::cerr << "SQL Error: " << sqlite3_errmsg(db) << std::endl;
   }
+
+  sqlite3_finalize(stmt);
 }
 
 void DataStore::insertResultEntry(ResultEntry entry) {
-  sqlite3_stmt *stmt;
-
-  const char *q = sqlite3_mprintf("INSERT INTO result "
+  const char *q = sqlite3_mprintf("insert into result "
       "(model_name, subject_name, notes, date, value) "
-      "VALUES ('%q', '%q', '%q', 'today', '%f')",
-      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.value);
-  query(q);
-  // sqlite3_free(q);
+      "values ('%q', '%q', '%q', '%q', %f)",
+      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value);
+
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
+}
+
+void DataStore::deleteModelEntry(std::string name) {
+  const char *q = sqlite3_mprintf("delete from model where name = '%q'", name.c_str());
+
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
+}
+
+void DataStore::deleteResultEntry(int id) {
+  const char *q = sqlite3_mprintf("delete from result where id = %d", id);
+
+  sqlite3_stmt *stmt = query(q);
+  sqlite3_step(stmt);
+
+  sqlite3_free((void *) q);
+  sqlite3_finalize(stmt);
 }
 
 sqlite3_stmt *DataStore::query(const char *q) {
@@ -158,6 +187,3 @@ sqlite3_stmt *DataStore::query(const char *q) {
   return stmt;
 }
 
-void DataStore::close() {
-  sqlite3_close(db);
-}

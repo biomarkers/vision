@@ -9,10 +9,10 @@ public:
   std::string modelName;
   std::string subjectName;
   std::string notes;
-  // TODO: date
+  std::string date;
   float value;
 
-  ResultEntry(int id, std::string modelName, std::string subjectName, std::string notes, float value) : id(id), modelName(modelName), subjectName(subjectName), notes(notes), value(value) { }
+  ResultEntry(int id, std::string modelName, std::string subjectName, std::string notes, std::string date, float value) : id(id), modelName(modelName), subjectName(subjectName), notes(notes), date(date), value(value) { }
 };
 
 #endif
