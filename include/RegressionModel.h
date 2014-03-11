@@ -55,14 +55,19 @@ public:
     ///grab the last frame we need to look at
     int getModelRunTime();
 
+    //data grabbing functions to get the raw data from the last run (calibration or evaluation)
+    float getRed(int second);
+    float getGreen(int second);
+    float getBlue(int second);
+
     //matrix of raw model output from calibrations
     cv::Mat getRawCalData();
 
     //unique model name
-    std::string GetModelName();
+    std::string getModelName();
 
     //name of substance being tested
-    std::string GetTestName();
+    std::string getTestName();
 
     //get string with statistical data about last test run
     std::string getStatData();
@@ -95,6 +100,9 @@ private:
     //get a row vector of run results
     cv::Mat getModelWeights();
 
+    //binary search for value near index on given column of matrix
+    float getDataPoint(int index, int column, std::vector<cv::SerializableScalar>* pvec);
+
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mHue, mTime;
 
@@ -111,6 +119,12 @@ private:
 
     //raw data of calibration tests, so shit can be graphed later on yo
     std::vector<std::vector<cv::SerializableScalar> > mRawCalibrationData;
+
+    //was the last run a calibration or an evaluation?
+    bool mWasEvaluation;
+
+    //raw data for last evaluation
+    std::vector<cv::SerializableScalar> mRawEvaluationData;
 
     //final regression weights for use in the evaluation of an unknown
     cv::SerializableMat mFinalWeights;
@@ -129,7 +143,7 @@ private:
     {
         std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mFinalWeights & mModelName & mTestName;
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mWasEvaluation & mRawEvaluationData & mFinalWeights & mModelName & mTestName;
     }
 
 };

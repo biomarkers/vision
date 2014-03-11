@@ -73,6 +73,10 @@ int main(int argc, char** argv)
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::RED);
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
+    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::BLUE);
+    std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
+    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::GREEN);
+    std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 1, 400, ModelComponent::HUE);
@@ -88,6 +92,8 @@ int main(int argc, char** argv)
     std::vector<cv::SerializableScalar> colors4;
     std::vector<cv::SerializableScalar> colors5;
 
+    std::cout << "Lollies!\n";
+
     colors = readcsv("etc/40mg.csv");
     model->calibrate(colors, 40);
     colors1 = readcsv("etc/100mg.csv");
@@ -102,22 +108,22 @@ int main(int argc, char** argv)
     colors5 = readcsv("etc/unknown.csv");
 
     float result = model->evaluate(colors);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n  40 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors1);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n 100 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors2);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n 200 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors3);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n 300 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors4);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n 400 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
     result = model->evaluate(colors5);
-    std::cout << "\n---------------------\nResult: " << result << "\n" << model->getStatData()
+    std::cout << "\n---------------------\n  70 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
 
     cv::Mat shit = model->getRawCalData();
@@ -134,16 +140,27 @@ int main(int argc, char** argv)
     factory.serializeToDB(mod4, blob, len);
     ModelPtr mod2 = factory.deserializeFromDB(blob, len);
 
+    std::cout << "\nPost archive test";
     result = mod2->evaluate(colors);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\n 40 Result: " << result
               << "\n---------------------\n";
 
+    std::cout << "\nChucking and recalibrating test";
     model->chuckLastCalibration();
     result = model->evaluate(colors4);
-    std::cout << "\n---------------------\nResult: " << result << "~~" << laterresult
+    std::cout << "\n---------------------\n 400 Result: " << result << "~~" << laterresult
               << "\n---------------------\n";
     model->calibrate(colors4, 400);
     result = model->evaluate(colors4);
-    std::cout << "\n---------------------\nResult: " << result
+    std::cout << "\n---------------------\n 400 Result: " << result
               << "\n---------------------\n";
+
+    std::cout << "\nPlotting test, 400mg eval\n";
+    for(int c = 10; c < 20; c++)
+    {
+        std::cout << c << " " << model->getRed(c) << " " << colors4[c][2] << "\n";
+    }
+
+
+
 }

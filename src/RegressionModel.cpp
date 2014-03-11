@@ -6,6 +6,7 @@
 
 RegressionModel::RegressionModel()
 {
+    mWasEvaluation = false;
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
@@ -15,6 +16,8 @@ RegressionModel::RegressionModel()
 //evaluate a test sample, return the estimation
 float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
 {
+    mWasEvaluation = true;
+    mRawEvaluationData = colors;
     runModel(colors);
     cv::Mat weights = getModelWeights();
     return evaluateUnknown(weights);
@@ -81,6 +84,50 @@ int RegressionModel::getModelRunTime()
     return last;
 }
 
+//data grabbing functions to get the raw data from the last run (calibration or evaluation)
+float RegressionModel::getRed(int second)
+{
+    if(mWasEvaluation)
+        return getDataPoint(second, mRed, &mRawEvaluationData);
+    else
+        return getDataPoint(second, mRed, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+}
+
+float RegressionModel::getGreen(int second)
+{
+    if(mWasEvaluation)
+        return getDataPoint(second, mGreen, &mRawEvaluationData);
+    else
+        return getDataPoint(second, mGreen, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+}
+
+float RegressionModel::getBlue(int second)
+{
+    if(mWasEvaluation)
+        return getDataPoint(second, mBlue, &mRawEvaluationData);
+    else
+        return getDataPoint(second, mBlue, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+}
+
+//binary search for value near index on given column of matrix
+float RegressionModel::getDataPoint(int index, int column, std::vector<cv::SerializableScalar>* pvec)
+{
+    int a = 0;
+    int b = pvec->size();
+    int in = pvec->size() / 2;
+    while(abs(index - (*pvec)[in][mTime]) < 1 || b-a > 1)
+    {
+        if((*pvec)[in][mTime] > index)
+            b = in;
+        else if((*pvec)[in][mTime] < index)
+            a = in;
+        else//hit it exactly!
+            break;
+        in = a + (b-a)/2;
+    }
+    return (*pvec)[in][column];
+}
+
 //matrix of raw model output from calibrations
 cv::Mat RegressionModel::getRawCalData()
 {
@@ -88,13 +135,13 @@ cv::Mat RegressionModel::getRawCalData()
 }
 
 //unique model name
-std::string RegressionModel::GetModelName()
+std::string RegressionModel::getModelName()
 {
     return mModelName;
 }
 
 //name of substance being tested
-std::string RegressionModel::GetTestName()
+std::string RegressionModel::getTestName()
 {
     return mTestName;
 }

@@ -19,7 +19,7 @@ ModelPtr RegressionFactory::deserializeFromDB(const void* blob, unsigned int len
 {
     ModelPtr model;
 
-    char* instr = new char[len];
+    char* instr = (char*) malloc(sizeof(char) * len);//new char[len];
     memcpy(instr, blob, len);
     std::string instring;
     instring.append(instr, len);
