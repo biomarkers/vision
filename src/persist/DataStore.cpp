@@ -143,7 +143,7 @@ void DataStore::insertModelEntry(ModelEntry entry) {
   sqlite3_finalize(stmt);
 }
 
-void DataStore::insertResultEntry(ResultEntry entry) {
+int DataStore::insertResultEntry(ResultEntry entry) {
   const char *q = sqlite3_mprintf("insert into result "
       "(model_name, subject_name, notes, date, value) "
       "values ('%q', '%q', '%q', '%q', %f)",
@@ -154,6 +154,8 @@ void DataStore::insertResultEntry(ResultEntry entry) {
 
   sqlite3_free((void *) q);
   sqlite3_finalize(stmt);
+
+  return sqlite3_last_insert_rowid(db);
 }
 
 void DataStore::deleteModelEntry(std::string name) {

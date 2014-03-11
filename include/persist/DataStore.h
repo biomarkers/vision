@@ -25,7 +25,7 @@ public:
   std::vector<ResultEntry> findResultsForModelName(std::string name);
 
   void insertModelEntry(ModelEntry entry);
-  void insertResultEntry(ResultEntry entry);
+  int insertResultEntry(ResultEntry entry);
 
   void deleteModelEntry(std::string name);
   void deleteResultEntry(int id);
