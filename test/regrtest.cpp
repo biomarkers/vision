@@ -146,7 +146,7 @@ int main(int argc, char** argv)
               << "\n---------------------\n";
 
     std::cout << "\nChucking and recalibrating test";
-    model->chuckLastCalibration();
+    model->chuckCalibration(model->getNumCalibrations() - 1);
     result = model->evaluate(colors4);
     std::cout << "\n---------------------\n 400 Result: " << result << "~~" << laterresult
               << "\n---------------------\n";
@@ -158,7 +158,7 @@ int main(int argc, char** argv)
     std::cout << "\nPlotting test, 400mg eval\n";
     for(int c = 10; c < 20; c++)
     {
-        std::cout << c << " " << model->getRed(c) << " " << colors4[c][2] << "\n";
+        std::cout << c << " " << model->getRed(c) << " " << colors4[c][2] << " " << model->getRegressionPoint(0,c) << "\n";
     }
 
 

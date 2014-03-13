@@ -20,6 +20,7 @@ public:
     virtual ModelType getModelType();
     virtual std::string getStatString();
 private:
+    virtual float graphPoint(int second);
     ExponentialRegression(){}
     cv::Mat logMat(cv::Mat x, float percent);
     float mWeight; //more ezmode weights

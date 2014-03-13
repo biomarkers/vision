@@ -61,6 +61,11 @@ std::string LinearRegression::getStatString()
     return data.str();
 }
 
+float LinearRegression::graphPoint(int second)
+{
+    return mWeights.row(0).at<float>(0) + mWeights.row(1).at<float>(0) * second;
+}
+
 ModelComponent::ModelType LinearRegression::getModelType()
 {
     return ModelComponent::LINEAR;

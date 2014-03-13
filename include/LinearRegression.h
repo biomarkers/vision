@@ -19,7 +19,7 @@ public:
     virtual ModelType getModelType();
     virtual std::string getStatString();
 private:
-
+    virtual float graphPoint(int second);
     friend class boost::serialization::access;
     LinearRegression() {}
 

@@ -91,6 +91,8 @@ protected:
     //grab sum( (yi - mean)^2) from mat
     float getSquaredFromMean(cv::Mat x);
 
+    virtual float graphPoint(int second) = 0;
+
     friend class boost::serialization::access;
 
     template<typename Archive>

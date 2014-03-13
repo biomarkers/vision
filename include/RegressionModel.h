@@ -33,9 +33,6 @@ public:
     //evaluate a test sample, return the estimation
     float evaluate(std::vector<cv::SerializableScalar> colors);
 
-    //static file loader
-    static ModelPtr loadFromFile(std::string filename);
-
     //add a calibration point to the model
     void calibrate(std::vector<cv::SerializableScalar> colors,
                    float calibrationValue);
@@ -59,6 +56,14 @@ public:
     float getRed(int second);
     float getGreen(int second);
     float getBlue(int second);
+    //get a point to graph for the last regression run on the given component
+    float getRegressionPoint(int component, int second);
+
+    //get the calibration value used for a calibration run (eg mgdL)
+    float getCalibrationConcentration(int run);
+
+    //set the statistical data to a certain calibration run
+    void setStatsForCalibration(int run);
 
     //matrix of raw model output from calibrations
     cv::Mat getRawCalData();
@@ -72,13 +77,14 @@ public:
     //get string with statistical data about last test run
     std::string getStatData();
 
-    //throw away last calibration run
-    void chuckLastCalibration();
+    //throw away a calibration run
+    void chuckCalibration(int run);
 
     //have at least two calibration runs been done?
     bool isCalibrated();
 
     //query the important UI things about each model component
+    int queryNumComponents();
     int queryBegin(int component);
     int queryEnd(int component);
     ModelComponent::VariableType queryVariable(int component);

@@ -42,6 +42,11 @@ std::string PointAnalysis::getStatString()
     return data.str();
 }
 
+float PointAnalysis::graphPoint(int second)
+{
+    return mAvg + 0 * second;
+}
+
 ModelComponent::ModelType PointAnalysis::getModelType()
 {
     return ModelComponent::POINT;

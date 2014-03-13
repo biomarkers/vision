@@ -89,6 +89,10 @@ float ExponentialRegression::getWeight()
     return mWeight;
 }
 
+float ExponentialRegression::graphPoint(int second)
+{
+    return exp(mWeight * second) + mDisp;
+}
 
 ModelComponent::ModelType ExponentialRegression::getModelType()
 {

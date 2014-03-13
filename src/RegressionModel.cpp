@@ -23,17 +23,11 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
     return evaluateUnknown(weights);
 }
 
-//static file loader
-ModelPtr RegressionModel::loadFromFile(std::string filename)
-{
-    ModelPtr blank;
-    return blank;
-}
-
 //add a calibration point to the model
 void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
                float calibrationValue)
 {
+    mWasEvaluation = false;
     mRawCalibrationData.push_back(colors);
     runModel(colors);
     //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
@@ -109,6 +103,13 @@ float RegressionModel::getBlue(int second)
         return getDataPoint(second, mBlue, &mRawCalibrationData[mRawCalibrationData.size()-1]);
 }
 
+float RegressionModel::getRegressionPoint(int component, int second)
+{
+    if(mComponents.size() > component)
+        return mComponents[component]->graphPoint(second);
+    return 0;
+}
+
 //binary search for value near index on given column of matrix
 float RegressionModel::getDataPoint(int index, int column, std::vector<cv::SerializableScalar>* pvec)
 {
@@ -127,6 +128,20 @@ float RegressionModel::getDataPoint(int index, int column, std::vector<cv::Seria
     }
     return (*pvec)[in][column];
 }
+
+//get the calibration value used for a calibration run (eg mgdL)
+float RegressionModel::getCalibrationConcentration(int run)
+{
+    return mCalibrationData.row(run).at<float>(0);
+}
+
+//set the statistical data to a certain calibration run
+void RegressionModel::setStatsForCalibration(int run)
+{
+    if(run < mRawCalibrationData.size())
+        runModel(mRawCalibrationData[run]);
+}
+
 
 //matrix of raw model output from calibrations
 cv::Mat RegressionModel::getRawCalData()
@@ -160,6 +175,11 @@ std::string RegressionModel::getStatData()
 bool RegressionModel::isCalibrated()
 {
     return mCalibrationData.size().height > 1;
+}
+
+int RegressionModel::queryNumComponents()
+{
+    return mComponents.size();
 }
 
 int RegressionModel::queryBegin(int component)
@@ -263,10 +283,16 @@ cv::Mat RegressionModel::getModelWeights()
 }
 
 //throw away last calibration run
-void RegressionModel::chuckLastCalibration()
+void RegressionModel::chuckCalibration(int run)
 {
-    //int cals = mCalibrationData.size().height;
-    mCalibrationData.pop_back();
+    cv::Mat temp(0, mCalibrationData.size().width, CV_32F);
+    for(int c = 0; c < mCalibrationData.size().height; c++)
+    {
+        if(c != run)
+            temp.push_back(mCalibrationData.row(c));
+    }
+    mCalibrationData = temp;
+    mRawCalibrationData.erase(mRawCalibrationData.begin() + run);
     dryCalibrate();
 }
 

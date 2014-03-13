@@ -20,6 +20,7 @@ public:
     virtual ModelType getModelType();
     virtual std::string getStatString();
 private:
+    virtual float graphPoint(int second);
     PointAnalysis(){}
     float mAvg; //ezmode weight
 
