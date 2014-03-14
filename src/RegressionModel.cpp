@@ -117,7 +117,7 @@ float RegressionModel::getDataPoint(int index, int column, std::vector<cv::Seria
     int a = 0;
     int b = pvec->size();
     int in = pvec->size() / 2;
-    while(abs(index - (*pvec)[in][mTime]) < 1 && b-a > 1)
+    while(abs(index - (*pvec)[in][mTime]) > 1)
     {
         if((*pvec)[in][mTime] > index)
             b = in;
@@ -126,6 +126,8 @@ float RegressionModel::getDataPoint(int index, int column, std::vector<cv::Seria
         else//hit it exactly!
             break;
         in = a + (b-a)/2;
+        if(a == b)
+            break;
     }
     return (*pvec)[in][column];
 }
