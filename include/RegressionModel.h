@@ -59,6 +59,9 @@ public:
     //get a point to graph for the last regression run on the given component
     float getRegressionPoint(int component, int second);
 
+    //get currently graphed calibration run
+    int getGraphedCalibration();
+
     //get the calibration value used for a calibration run (eg mgdL)
     float getCalibrationConcentration(int run);
 
