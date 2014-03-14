@@ -293,7 +293,8 @@ void RegressionModel::chuckCalibration(int run)
     }
     mCalibrationData = temp;
     mRawCalibrationData.erase(mRawCalibrationData.begin() + run);
-    dryCalibrate();
+    if(mCalibrationData.size().height > 0)
+        dryCalibrate();
 }
 
 
