@@ -37,6 +37,7 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     mFinalComponent->evaluate(mCalibrationData);
     //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
     mFinalWeights = mFinalComponent->mWeights;
+    mCalibrationToGraph = mCalibrationData.size().height - 1;
 }
 
 void RegressionModel::dryCalibrate()
@@ -84,7 +85,7 @@ float RegressionModel::getRed(int second)
     if(mWasEvaluation)
         return getDataPoint(second, mRed, &mRawEvaluationData);
     else
-        return getDataPoint(second, mRed, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+        return getDataPoint(second, mRed, &mRawCalibrationData[mCalibrationToGraph]);
 }
 
 float RegressionModel::getGreen(int second)
@@ -92,7 +93,7 @@ float RegressionModel::getGreen(int second)
     if(mWasEvaluation)
         return getDataPoint(second, mGreen, &mRawEvaluationData);
     else
-        return getDataPoint(second, mGreen, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+        return getDataPoint(second, mGreen, &mRawCalibrationData[mCalibrationToGraph]);
 }
 
 float RegressionModel::getBlue(int second)
@@ -100,7 +101,7 @@ float RegressionModel::getBlue(int second)
     if(mWasEvaluation)
         return getDataPoint(second, mBlue, &mRawEvaluationData);
     else
-        return getDataPoint(second, mBlue, &mRawCalibrationData[mRawCalibrationData.size()-1]);
+        return getDataPoint(second, mBlue, &mRawCalibrationData[mCalibrationToGraph]);
 }
 
 float RegressionModel::getRegressionPoint(int component, int second)
@@ -135,11 +136,14 @@ float RegressionModel::getCalibrationConcentration(int run)
     return mCalibrationData.row(run).at<float>(0);
 }
 
-//set the statistical data to a certain calibration run
+//set the statistical data and graph output to a certain calibration run
 void RegressionModel::setStatsForCalibration(int run)
 {
     if(run < mRawCalibrationData.size())
+    {
         runModel(mRawCalibrationData[run]);
+        mCalibrationToGraph = run;
+    }
 }
 
 

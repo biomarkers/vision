@@ -62,7 +62,7 @@ public:
     //get the calibration value used for a calibration run (eg mgdL)
     float getCalibrationConcentration(int run);
 
-    //set the statistical data to a certain calibration run
+    //set the statistical data and graph output to a certain calibration run
     void setStatsForCalibration(int run);
 
     //matrix of raw model output from calibrations
@@ -128,6 +128,7 @@ private:
 
     //was the last run a calibration or an evaluation?
     bool mWasEvaluation;
+    int mCalibrationToGraph;
 
     //raw data for last evaluation
     std::vector<cv::SerializableScalar> mRawEvaluationData;
@@ -149,7 +150,7 @@ private:
     {
         std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mWasEvaluation & mRawEvaluationData & mFinalWeights & mModelName & mTestName;
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mWasEvaluation & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mModelName & mTestName;
     }
 
 };
