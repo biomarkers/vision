@@ -46,6 +46,8 @@ std::vector<cv::SerializableScalar> readcsv(std::string fname)
         {
             in >> tmp;
             Y[i] = tmp;
+            if(i == cols-1)
+                Y[i] /= 30.f;
             if(i < cols-1)
                 in >> delim;
         }
@@ -69,13 +71,13 @@ int main(int argc, char** argv)
 
     //sample model ideas
     //factory.addNewComponent(ModelComponent::LINEAR, 0, 1000, ModelComponent::GREEN);
-    factory.addNewComponent(ModelComponent::LINEAR, 0, 9789, ModelComponent::RED);
+    factory.addNewComponent(ModelComponent::LINEAR, 0, 9789/30.f, ModelComponent::RED);
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
-    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::RED);
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
-    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::BLUE);
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
-    factory.addNewComponent(ModelComponent::POINT, 8500, 9790, ModelComponent::GREEN);
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::GREEN);
     std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);
@@ -156,9 +158,9 @@ int main(int argc, char** argv)
               << "\n---------------------\n";
 
     std::cout << "\nPlotting test, 400mg eval\n";
-    for(int c = 10; c < 20; c++)
+    for(int c = 60; c < 80; c++)
     {
-        std::cout << c << " " << model->getRed(c) << " " << colors4[c][2] << " " << model->getRegressionPoint(0,c) << "\n";
+        std::cout << c << " " << model->getRed(c) << " " << colors4[c*30][2] << " " << model->getRegressionPoint(0,c) << "\n";
     }
 
 
