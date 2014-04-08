@@ -36,14 +36,13 @@ int main(int argc, char **argv) {
   DataStore p = DataStore::open("jkk_store.sqlite3");
   p.createTables();
 
-  // ResultEntry entry(-1, "My Model", "Bob", "Some notes", 66.6);
-  // p.insertResultEntry(entry);
+  ResultEntry entry(-1, "My Model", "Bob", "Some notes", "now", 66.6);
+  p.insertResultEntry(entry);
 
   // char *str = "SOMEDATA";
   // void *ptr = str;
   // ModelEntry mod("My Model", ptr, 7);
   // p.insertModelEntry(mod);
-  
 
   RegressionFactory factory;
   factory.createNew("mymodel_ser", "mytest_ser");
@@ -55,17 +54,15 @@ int main(int argc, char **argv) {
   unsigned int len;
   factory.serializeToDB(myModel, blob, len);
 
-  ModelEntry mod(myModel->GetModelName(), blob, len);
+  ModelEntry mod(myModel->getModelName(), blob, len);
   p.insertModelEntry(mod);
-
-  p.deleteModelEntry("mymodel_ser");
 
   std::vector<ModelEntry> entries = p.findAllModelEntries();
   for(int i = 0; i < entries.size(); i++) {
     std::cout << entries[i].name << " (" << entries[i].length << " bytes)" << std::endl;
     std::vector<ResultEntry> results = p.findResultsForModelName(entries[i].name);
     ModelPtr deserModel = factory.deserializeFromDB(entries[i].data, entries[i].length);
-    std::cout << "Deserialized -- name: " << deserModel->GetModelName() << std::endl;
+    std::cout << "Deserialized -- name: " << deserModel->getModelName() << std::endl;
     std::cout << "  Entries: ";
     for(int j = 0; j < results.size(); j++) {
       std::cout << results[i].subjectName << ", ";
