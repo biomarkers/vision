@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <stdexcept>
 
 DataStore::DataStore(sqlite3 *db) : db(db) {}
 
@@ -34,6 +35,8 @@ void DataStore::createTables() {
        "notes TEXT,"
        "date TEXT,"
        "value REAL,"
+       "exported_data TEXT,"
+       "exported_message TEXT,"
        "FOREIGN KEY(model_name) REFERENCES model(name)"
      ");";
 
@@ -88,7 +91,7 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", ""));
         break;
     }
   }
@@ -115,7 +118,7 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", ""));
         break;
     }
   }
@@ -124,6 +127,35 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
   sqlite3_finalize(stmt);
 
   return entries;
+}
+
+ResultEntry DataStore::findResultForIdWithExportdData(int id) {
+  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value, exported_data, exported_message from result where id = '%d'", id);
+  sqlite3_stmt *stmt = query(q);
+
+  int rc;
+  while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+    switch(rc) {
+      case SQLITE_ROW:
+        int id = sqlite3_column_int(stmt, 0);
+        std::string modelName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 1)));
+        std::string subjectName(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+        std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
+        std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
+        double value = sqlite3_column_double(stmt, 5);
+        std::string exportedData(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 6)));
+        std::string exportedMessage(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 7)));
+
+        ResultEntry entry = ResultEntry(id, modelName, subjectName, notes, date, value, exportedData, exportedMessage);
+
+        sqlite3_free((void *) q);
+        sqlite3_finalize(stmt);
+
+        return entry;
+    }
+  }
+
+  throw std::runtime_error("No result for given id");
 }
 
 void DataStore::insertModelEntry(ModelEntry entry) {
@@ -145,9 +177,9 @@ void DataStore::insertModelEntry(ModelEntry entry) {
 
 int DataStore::insertResultEntry(ResultEntry entry) {
   const char *q = sqlite3_mprintf("insert into result "
-      "(model_name, subject_name, notes, date, value) "
+      "(model_name, subject_name, notes, date, value, exported_data, exported_message) "
       "values ('%q', '%q', '%q', '%q', %f)",
-      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value);
+      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value, entry.exportedData.c_str(), entry.exportedMessage.c_str());
 
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);

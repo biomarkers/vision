@@ -23,6 +23,7 @@ public:
   std::vector<ModelEntry> findAllModelEntries();
   std::vector<ResultEntry> findAllResultEntries();
   std::vector<ResultEntry> findResultsForModelName(std::string name);
+  ResultEntry findResultForIdWithExportdData(int id);
 
   void insertModelEntry(ModelEntry entry);
   int insertResultEntry(ResultEntry entry);
