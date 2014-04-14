@@ -54,7 +54,7 @@ void DataStore::close() {
 std::vector<ModelEntry> DataStore::findAllModelEntries() {
   std::vector<ModelEntry> entries;
 
-  const char *q = "select name, data from model order by name desc";
+  const char *q = "select name, data, units from model order by name desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
