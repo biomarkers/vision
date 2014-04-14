@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
   DataStore p = DataStore::open("jkk_store.sqlite3");
   p.createTables();
 
-  ResultEntry entry(-1, "My Model", "Bob", "Some notes", "now", 66.6);
+  ResultEntry entry(-1, "My Model", "Bob", "Some notes", "now", 66.6, "", "");
   p.insertResultEntry(entry);
 
   // char *str = "SOMEDATA";

@@ -20,7 +20,8 @@ void DataStore::createTables() {
   const char *q =
     "CREATE TABLE IF NOT EXISTS model ("
        "name CHAR(50) PRIMARY KEY,"
-       "data BLOB"
+       "data BLOB,"
+       "units TEXT,"
      ");";
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
@@ -64,7 +65,8 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
         int len = sqlite3_column_bytes(stmt, 1);
         void *data = std::malloc(len);
         std::memcpy(data, sqlite3_column_blob(stmt, 1), len);
-        entries.push_back(ModelEntry(name, data, len));
+        std::string units(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+        entries.push_back(ModelEntry(name, data, len, units));
         break;
     }
   }
