@@ -76,6 +76,32 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
   return entries;
 }
 
+ModelEntry DataStore::findModelEntryForResultId(int id) {
+  const char *q = sqlite3_mprintf("select name, data, units from model where id = '%d'", id);
+  sqlite3_stmt *stmt = query(q);
+
+  int rc;
+  while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
+    switch(rc) {
+      case SQLITE_ROW:
+        std::string name(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 0)));
+        int len = sqlite3_column_bytes(stmt, 1);
+        void *data = std::malloc(len);
+        std::memcpy(data, sqlite3_column_blob(stmt, 1), len);
+        std::string units(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 2)));
+
+        ModelEntry entry(name, data, len, units);
+
+        sqlite3_free((void *) q);
+        sqlite3_finalize(stmt);
+
+        return entry;
+    }
+  }
+
+  throw std::runtime_error("No model for given id");
+}
+
 std::vector<ResultEntry> DataStore::findAllResultEntries() {
   std::vector<ResultEntry> entries;
 
