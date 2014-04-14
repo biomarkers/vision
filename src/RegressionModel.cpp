@@ -11,6 +11,7 @@ RegressionModel::RegressionModel()
     //...not really it just doesn't matter
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
+    mHasCircle = false;
 }
 
 //evaluate a test sample, return the estimation
@@ -21,7 +22,8 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
     mRawEvaluationData = colors;
     runModel(colors);
     cv::Mat weights = getModelWeights();
-    return evaluateUnknown(weights);
+    mLastEvaluation = evaluateUnknown(weights);
+    return mLastEvaluation;
 }
 
 //add a calibration point to the model
@@ -31,12 +33,16 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     mWasEvaluation = false;
     mRawCalibrationData.push_back(colors);
     runModel(colors);
+
     //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
+
     cv::Mat weights = getModelWeights();
     weights.at<float>(0) = calibrationValue;
     mCalibrationData.push_back(weights);
     mFinalComponent->evaluate(mCalibrationData);
+
     //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
+
     mFinalWeights = mFinalComponent->mWeights;
     mCalibrationToGraph = mCalibrationData.size().height - 1;
 }
@@ -180,6 +186,30 @@ std::string RegressionModel::getStatData()
         data.append(mComponents[c]->getStatString());
     }
     return data;
+}
+
+void RegressionModel::setCircle(float center, float radius)
+{
+    if(mHasCircle)
+        return;
+    mCircleCenter = center;
+    mCircleRadius = radius;
+    mHasCircle = true;
+}
+
+
+float RegressionModel::getCircleCenter()
+{
+    if(!mHasCircle)
+        return -1;
+    return mCircleCenter;
+}
+
+float RegressionModel::getCircleRadius()
+{
+    if(!mHasCircle)
+        return -1;
+    return mCircleRadius;
 }
 
 //have at least two calibration runs been done?

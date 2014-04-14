@@ -86,6 +86,13 @@ public:
     //have at least two calibration runs been done?
     bool isCalibrated();
 
+    //set the circle center and size
+    void setCircle(float center, float radius);
+
+    //get the circle center and size
+    float getCircleCenter();
+    float getCircleRadius();
+
     //query the important UI things about each model component
     int queryNumComponents();
     int queryBegin(int component);
@@ -121,19 +128,19 @@ private:
     //linear regression model for the final weights
     ComponentPtr mFinalComponent;
 
-    //calibration test outcomes, in raw data format
+    //calibration test outcomes, in matrix format
     //rows of form [y, w1, w2, w3...]
     //where wi is the regression output from the ith model component
     cv::SerializableMat mCalibrationData;
 
-    //raw data of calibration tests, so shit can be graphed later on yo
+    //raw color data of calibration tests, so shit can be graphed later on yo
     std::vector<std::vector<cv::SerializableScalar> > mRawCalibrationData;
 
     //was the last run a calibration or an evaluation?
     bool mWasEvaluation;
     int mCalibrationToGraph;
 
-    //raw data for last evaluation
+    //raw rgb data for last evaluation
     std::vector<cv::SerializableScalar> mRawEvaluationData;
 
     //final regression weights for use in the evaluation of an unknown
@@ -145,15 +152,32 @@ private:
     //name of test being performed, eg. "Glucose"
     std::string mTestName;
 
+    //center of circle of interest
+    float mCircleCenter;
+
+    //radius of circle of interest
+    float mCircleRadius;
+
+    //is the circle set?
+    float mHasCircle;
+
+    //last result from evaluation
+    float mLastEvaluation;
+
     //allow serialization
     friend class boost::serialization::access;
+    //allow data exporting
+    friend class DataExporter;
 
     template<typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
         std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mCalibrationData & mRawCalibrationData & mWasEvaluation & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mModelName & mTestName;
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent
+                & mCalibrationData & mRawCalibrationData & mWasEvaluation
+                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mModelName
+                & mTestName & mCircleCenter & mCircleRadius & mHasCircle & mLastEvaluation;
     }
 
 };

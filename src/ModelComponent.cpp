@@ -65,4 +65,19 @@ float ModelComponent::getSquaredFromMean(cv::Mat x)
     return se;
 }
 
-
+void ModelComponent::insertVar(std::ostringstream *stream)
+{
+    switch(mVar)
+    {
+    case RED:
+        *stream << "Red "; break;
+    case BLUE:
+        *stream << "Blue "; break;
+    case GREEN:
+        *stream << "Green "; break;
+    case HUE:
+        *stream << "Hue "; break;
+    default:
+        *stream << "? "; break;
+    }
+}
