@@ -21,7 +21,7 @@ public:
   void close();
 
   std::vector<ModelEntry> findAllModelEntries();
-  ModelEntry findModelEntryById(int id);
+  ModelEntry findModelEntryByName(std::string name);
   std::vector<ResultEntry> findAllResultEntries();
   std::vector<ResultEntry> findResultsForModelName(std::string name);
   ResultEntry findResultForIdWithExportdData(int id);

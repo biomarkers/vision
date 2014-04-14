@@ -76,8 +76,8 @@ std::vector<ModelEntry> DataStore::findAllModelEntries() {
   return entries;
 }
 
-ModelEntry DataStore::findModelEntryById(int id) {
-  const char *q = sqlite3_mprintf("select name, data, units from model where id = '%d'", id);
+ModelEntry DataStore::findModelEntryByName(std::string name) {
+  const char *q = sqlite3_mprintf("select name, data, units from model where name = '%q'", name.c_str());
   sqlite3_stmt *stmt = query(q);
 
   int rc;
