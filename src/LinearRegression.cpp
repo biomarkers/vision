@@ -57,7 +57,12 @@ float LinearRegression::getWeight()
 std::string LinearRegression::getStatString()
 {
     std::ostringstream data;
-    data << "Linear Regression Component R^2 = " << mR2 << "\n";
+    data << "Linear Regression Component\n";
+    insertVar(&data);
+    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    data << "y = " << mWeights.row(0).at<float>(1) << "t + " << mWeights.row(0).at<float>(0) << "\n";
+    data << "R^2 = " << mR2 << "\n";
+
     return data.str();
 }
 

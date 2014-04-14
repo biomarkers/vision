@@ -1,5 +1,6 @@
 #include "../include/RegressionFactory.h"
 #include "../include/RegressionModel.h"
+#include "../include/DataExporter.h"
 //#include "../include/BiomarkerImageProcessor.h"
 
 #include <iostream>
@@ -97,7 +98,13 @@ int main(int argc, char** argv)
     std::cout << "Lollies!\n";
 
     colors = readcsv("etc/40mg.csv");
+
+    std::cout << "Polly?\n";
+
     model->calibrate(colors, 40);
+
+    std::cout << "Kollies!\n";
+
     colors1 = readcsv("etc/100mg.csv");
     model->calibrate(colors1, 100);
     colors2 = readcsv("etc/200mg.csv");
@@ -107,6 +114,12 @@ int main(int argc, char** argv)
     colors4 = readcsv("etc/400mg.csv");
     float laterresult = model->evaluate(colors4);
     model->calibrate(colors4, 400);
+
+    DataExporter exp(model);
+    exp.exportCalibration();
+    std::cout << exp.getCSVData();
+    std::cout << exp.getTextData();
+
     colors5 = readcsv("etc/unknown.csv");
 
     float result = model->evaluate(colors);
@@ -162,6 +175,10 @@ int main(int argc, char** argv)
     {
         std::cout << c << " " << model->getRed(c) << " " << colors4[c*30][2] << " " << model->getRegressionPoint(0,c) << "\n";
     }
+
+    model->evaluate(colors5);
+    exp.exportDiagnosticRun();
+    std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
 
 
 

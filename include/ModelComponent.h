@@ -7,6 +7,7 @@
 #include <vector>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <iostream>
 
 
 //forward declaration of friend
@@ -77,6 +78,9 @@ protected:
 
     //variable to be tested
     VariableType mVar;
+
+    //stick the variable type as a string in a stream
+    void insertVar(std::ostringstream *stream);
 
     //private getters for friends only
     float getBegin();

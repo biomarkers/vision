@@ -38,7 +38,12 @@ float PointAnalysis::getWeight()
 std::string PointAnalysis::getStatString()
 {
     std::ostringstream data;
-    data << "Point Analysis Standard Deviation = " << mR2 << "\n";
+    data << "Point Analysis\n";
+    insertVar(&data);
+    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    data << "y = " << mAvg << "\n";
+    data << "Standard Deviation = " << mR2 << "\n";
+
     return data.str();
 }
 
