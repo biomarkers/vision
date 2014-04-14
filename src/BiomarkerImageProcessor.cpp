@@ -28,7 +28,7 @@ void BiomarkerImageProcessor::reset() {
   samples.clear();
 }
 
-cv::SerializableScalar BiomarkerImageProcessor::process(cv::Mat& frame) {
+cv::SerializableScalar BiomarkerImageProcessor::process(cv::Mat frame) {
   cv::Vec3f sampleCircle;
   if(isCircleDetectionEnabled()) {
     sampleCircle = this->findSampleCircle(frame);

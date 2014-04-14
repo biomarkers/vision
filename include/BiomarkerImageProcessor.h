@@ -14,7 +14,7 @@ public:
   void reset();
 
   /* Process a single input frame and store the result. */
-  cv::SerializableScalar process(cv::Mat& frame);
+  cv::SerializableScalar process(cv::Mat frame);
 
   /* Return the list of samples for the current test. */
   std::vector<cv::SerializableScalar> getSamples() { return samples; }

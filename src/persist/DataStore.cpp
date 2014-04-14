@@ -187,12 +187,13 @@ ResultEntry DataStore::findResultForIdWithExportdData(int id) {
 }
 
 void DataStore::insertModelEntry(ModelEntry entry) {
-  const char *q = "insert into model (name, data) values (?, ?)";
+  const char *q = "insert into model (name, data, units) values (?, ?)";
 
   sqlite3_stmt *stmt = query(q);
   int rc = sqlite3_prepare_v2(db, q, -1, &stmt, 0);
   sqlite3_bind_text(stmt, 1, entry.name.c_str(), -1, NULL);
   sqlite3_bind_blob(stmt, 2, entry.data, entry.length, NULL);
+  sqlite3_bind_text(stmt, 3, entry.units.c_str(), -1, NULL);
 
   sqlite3_step(stmt);
 

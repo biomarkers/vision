@@ -44,34 +44,33 @@ int main(int argc, char **argv) {
   // ModelEntry mod("My Model", ptr, 7);
   // p.insertModelEntry(mod);
 
-  RegressionFactory factory;
-  factory.createNew("mymodel_ser", "mytest_ser");
-  factory.addNewComponent(ModelComponent::LINEAR, 0, 10, ModelComponent::RED);
+  // RegressionFactory factory;
+  // factory.createNew("mymodel_ser", "mytest_ser");
+  // factory.addNewComponent(ModelComponent::LINEAR, 0, 10, ModelComponent::RED);
 
-  ModelPtr myModel = factory.getCreatedModel();
+  // ModelPtr myModel = factory.getCreatedModel();
 
-  const void *blob;
-  unsigned int len;
-  factory.serializeToDB(myModel, blob, len);
+  // const void *blob;
+  // unsigned int len;
+  // factory.serializeToDB(myModel, blob, len);
 
-  ModelEntry mod(myModel->getModelName(), blob, len);
-  p.insertModelEntry(mod);
+  // ModelEntry mod(myModel->getModelName(), blob, len);
+  // p.insertModelEntry(mod);
 
-  std::vector<ModelEntry> entries = p.findAllModelEntries();
-  for(int i = 0; i < entries.size(); i++) {
-    std::cout << entries[i].name << " (" << entries[i].length << " bytes)" << std::endl;
-    std::vector<ResultEntry> results = p.findResultsForModelName(entries[i].name);
-    ModelPtr deserModel = factory.deserializeFromDB(entries[i].data, entries[i].length);
-    std::cout << "Deserialized -- name: " << deserModel->getModelName() << std::endl;
-    std::cout << "  Entries: ";
-    for(int j = 0; j < results.size(); j++) {
-      std::cout << results[i].subjectName << ", ";
-    }
-    std::cout << std::endl;
-  }
-  p.close();
+  // std::vector<ModelEntry> entries = p.findAllModelEntries();
+  // for(int i = 0; i < entries.size(); i++) {
+  //   std::cout << entries[i].name << " (" << entries[i].length << " bytes)" << std::endl;
+  //   std::vector<ResultEntry> results = p.findResultsForModelName(entries[i].name);
+  //   ModelPtr deserModel = factory.deserializeFromDB(entries[i].data, entries[i].length);
+  //   std::cout << "Deserialized -- name: " << deserModel->getModelName() << std::endl;
+  //   std::cout << "  Entries: ";
+  //   for(int j = 0; j < results.size(); j++) {
+  //     std::cout << results[i].subjectName << ", ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+  // p.close();
 
-  /*
   cv::Mat frame;
   // skipNFrames(cap, 8730, &frame);
   while(true) {
@@ -91,7 +90,6 @@ int main(int argc, char **argv) {
       break;
     }
   }
-  */
 
   return 0;
 }
