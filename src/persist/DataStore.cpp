@@ -21,7 +21,7 @@ void DataStore::createTables() {
     "CREATE TABLE IF NOT EXISTS model ("
        "name CHAR(50) PRIMARY KEY,"
        "data BLOB,"
-       "units TEXT,"
+       "units TEXT"
      ");";
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
