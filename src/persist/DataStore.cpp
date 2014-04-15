@@ -207,7 +207,7 @@ void DataStore::insertModelEntry(ModelEntry entry) {
 int DataStore::insertResultEntry(ResultEntry entry) {
   const char *q = sqlite3_mprintf("insert into result "
       "(model_name, subject_name, notes, date, value, exported_data, exported_message) "
-      "values ('%q', '%q', '%q', '%q', %f)",
+      "values ('%q', '%q', '%q', '%q', %f, '%q', '%q')",
       entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value, entry.exportedData.c_str(), entry.exportedMessage.c_str());
 
   sqlite3_stmt *stmt = query(q);
