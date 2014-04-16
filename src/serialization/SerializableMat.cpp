@@ -1,5 +1,5 @@
 #include <opencv2/core/core.hpp>
-#include "../include/SerializableMat.h"
+#include "serialization/SerializableMat.h"
 #include <iostream>
 
 void cv::SerializableMat::putMatrix(cv::Mat mat)

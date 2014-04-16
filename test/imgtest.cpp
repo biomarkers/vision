@@ -1,10 +1,10 @@
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "BiomarkerImageProcessor.h"
-#include "persist/DataStore.h"
-#include "RegressionFactory.h"
-#include "RegressionModel.h"
+#include "vision/BiomarkerImageProcessor.h"
+#include "persistence/DataStore.h"
+#include "regression/RegressionFactory.h"
+#include "regression/RegressionModel.h"
 
 #define FRAME_SKIP 0
 

@@ -1,6 +1,6 @@
-#include "../include/RegressionFactory.h"
-#include "../include/RegressionModel.h"
-#include "../include/DataExporter.h"
+#include "regression/RegressionFactory.h"
+#include "regression/RegressionModel.h"
+#include "serialization/DataExporter.h"
 //#include "../include/BiomarkerImageProcessor.h"
 
 #include <iostream>
@@ -8,7 +8,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "../include/ModelComponents.h"
+#include "regression/ModelComponents.h"
 
 //read a csv file and return it in a vector of scalars
 std::vector<cv::SerializableScalar> readcsv(std::string fname)

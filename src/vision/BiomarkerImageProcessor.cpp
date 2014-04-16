@@ -1,4 +1,4 @@
-#include "BiomarkerImageProcessor.h"
+#include "vision/BiomarkerImageProcessor.h"
 
 #include <iostream>
 #include <boost/timer/timer.hpp>

@@ -1,7 +1,8 @@
-#ifndef __LIN_REG_H__
-#define __LIN_REG_H__
+#ifndef __POINT_REG_H__
+#define __POINT_REG_H__
 
-#include "../include/ModelComponent.h"
+#include "regression/ModelComponent.h"
+
 
 //forward declaring serialization class
 namespace boost{
@@ -10,27 +11,30 @@ class access;
 }
 }
 
-class LinearRegression : public ModelComponent
+class PointAnalysis : public ModelComponent
 {
 public:
-    LinearRegression(float begin, float end, ModelComponent::VariableType variable);
+    PointAnalysis(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
     virtual std::string getStatString();
 private:
     virtual float graphPoint(int second);
+    PointAnalysis(){}
+    float mAvg; //ezmode weight
+
     friend class boost::serialization::access;
-    LinearRegression() {}
 
     template<typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
         (void)version;
         ar & boost::serialization::base_object<ModelComponent>(*this);
+        ar & mAvg;
     }
 };
 
-BOOST_CLASS_EXPORT_KEY(LinearRegression);
+BOOST_CLASS_EXPORT_KEY(PointAnalysis);
 
 #endif

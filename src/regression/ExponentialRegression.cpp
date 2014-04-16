@@ -1,6 +1,6 @@
-#include "../include/ExponentialRegression.h"
-#include "../include/SerializableScalar.h"
-#include "../include/LinearRegression.h"
+#include "regression/ExponentialRegression.h"
+#include "regression/LinearRegression.h"
+#include "serialization/SerializableScalar.h"
 #include <math.h>
 #include <iostream>
 

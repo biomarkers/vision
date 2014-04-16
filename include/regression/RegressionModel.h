@@ -1,10 +1,10 @@
 #ifndef _REGRESSION_MODEL_H
 #define _REGRESSION_MODEL_H
 
-#include "../include/ModelComponent.h" //will need this later
+#include "regression/ModelComponent.h" //will need this later
                                          //for smart pointers
-#include "../include/SerializableScalar.h"
-#include "../include/SerializableMat.h"
+#include "serialization/SerializableScalar.h"
+#include "serialization/SerializableMat.h"
 
 #include <opencv2/core/core.hpp>
 #include <vector>

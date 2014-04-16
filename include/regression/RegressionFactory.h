@@ -1,8 +1,8 @@
 #ifndef _REGRESSION_FACTORY_H
 #define _REGRESSION_FACTORY_H
 
-#include "../include/RegressionModel.h"
-#include "../include/ModelComponent.h"
+#include "regression/RegressionModel.h"
+#include "regression/ModelComponent.h"
 
 
 class RegressionFactory{

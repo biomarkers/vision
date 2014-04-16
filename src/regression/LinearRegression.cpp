@@ -1,7 +1,7 @@
-#include "../include/LinearRegression.h"
+#include "regression/LinearRegression.h"
 #include <math.h>
 #include <iostream>
-#include "../include/SerializableScalar.h"
+#include "serialization/SerializableScalar.h"
 
 //BOOST_CLASS_EXPORT_IMPLEMENT(LinearRegression);
 

@@ -4,7 +4,7 @@
 #include <boost/timer/timer.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "SerializableScalar.h"
+#include "serialization/SerializableScalar.h"
 
 class BiomarkerImageProcessor {
 public:

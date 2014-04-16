@@ -1,7 +1,7 @@
-#ifndef __POINT_REG_H__
-#define __POINT_REG_H__
+#ifndef __EXP_REG_H__
+#define __EXP_REG_H__
 
-#include "../include/ModelComponent.h"
+#include "regression/ModelComponent.h"
 
 
 //forward declaring serialization class
@@ -11,18 +11,21 @@ class access;
 }
 }
 
-class PointAnalysis : public ModelComponent
+class ExponentialRegression : public ModelComponent
 {
 public:
-    PointAnalysis(float begin, float end, ModelComponent::VariableType variable);
+    ExponentialRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
     virtual std::string getStatString();
 private:
     virtual float graphPoint(int second);
-    PointAnalysis(){}
-    float mAvg; //ezmode weight
+    ExponentialRegression(){}
+    cv::Mat logMat(cv::Mat x, float percent);
+    float mWeight; //more ezmode weights
+    float mDisp;
+
 
     friend class boost::serialization::access;
 
@@ -31,10 +34,10 @@ private:
     {
         (void)version;
         ar & boost::serialization::base_object<ModelComponent>(*this);
-        ar & mAvg;
+        ar & mWeight & mDisp;
     }
 };
 
-BOOST_CLASS_EXPORT_KEY(PointAnalysis);
+BOOST_CLASS_EXPORT_KEY(ExponentialRegression);
 
 #endif

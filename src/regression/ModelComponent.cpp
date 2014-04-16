@@ -1,5 +1,5 @@
-#include "../include/ModelComponent.h"
-#include "../include/SerializableScalar.h"
+#include "regression/ModelComponent.h"
+#include "serialization/SerializableScalar.h"
 #include <math.h>
 
 

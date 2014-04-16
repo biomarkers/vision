@@ -1,7 +1,7 @@
 #include <math.h>
 #include <iostream>
-#include "../include/PointAnalysis.h"
-#include "../include/SerializableScalar.h"
+#include "regression/PointAnalysis.h"
+#include "serialization/SerializableScalar.h"
 
 //BOOST_CLASS_EXPORT_IMPLEMENT(PointAnalysis);
 

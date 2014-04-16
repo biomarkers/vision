@@ -3,7 +3,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <boost/shared_ptr.hpp>
-#include "../include/SerializableMat.h"
+#include "serialization/SerializableMat.h"
 #include <vector>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/base_object.hpp>

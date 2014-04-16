@@ -1,7 +1,7 @@
 #ifndef __DATA_EXPORTER_H
 #define __DATA_EXPORTER_H
 
-#include "../include/RegressionModel.h"
+#include "regression/RegressionModel.h"
 
 class DataExporter{
 public:

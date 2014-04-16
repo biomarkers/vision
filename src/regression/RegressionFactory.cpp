@@ -3,10 +3,10 @@
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
 
-#include "../include/RegressionFactory.h"
-#include "../include/RegressionModel.h"
-#include "../include/ModelComponent.h"
-#include "../include/ModelComponents.h"
+#include "regression/RegressionFactory.h"
+#include "regression/RegressionModel.h"
+#include "regression/ModelComponent.h"
+#include "regression/ModelComponents.h"
 
 #include <iostream>
 #include <fstream>

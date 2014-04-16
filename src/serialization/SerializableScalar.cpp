@@ -1,5 +1,5 @@
 #include <opencv2/core/core.hpp>
-#include "../include/SerializableScalar.h"
+#include "serialization/SerializableScalar.h"
 
 void cv::SerializableScalar::putScalar(cv::Scalar scalar)
 {
