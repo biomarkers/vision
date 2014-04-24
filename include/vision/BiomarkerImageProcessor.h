@@ -36,7 +36,7 @@ private:
   float circleRadius;
   bool circleDetectionEnabled;
 
-  cv::Vec3f findSampleCircle(cv::Mat frame);
+  std::vector<cv::Vec3f> findSampleCircles(cv::Mat frame);
   cv::Scalar sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle);
 };
 
