@@ -116,6 +116,8 @@ void DataExporter::createCSVData()
         if(c < 3)
             stream << ", ";
     }
+    
+    stream << "\n";
 
     mCSVData.append(stream.str());
     //mCSVFileCurrent = false;
