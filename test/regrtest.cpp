@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 
     std::cout << "Lollies!\n";
 
-    colors = readcsv("etc/40mg.csv");
+    colors = readcsv("test/40mg.csv");
 
     std::cout << "Polly?\n";
 
@@ -105,13 +105,13 @@ int main(int argc, char** argv)
 
     std::cout << "Kollies!\n";
 
-    colors1 = readcsv("etc/100mg.csv");
+    colors1 = readcsv("test/100mg.csv");
     model->calibrate(colors1, 100);
-    colors2 = readcsv("etc/200mg.csv");
+    colors2 = readcsv("test/200mg.csv");
     model->calibrate(colors2, 200);
-    colors3 = readcsv("etc/300mg.csv");
+    colors3 = readcsv("test/300mg.csv");
     model->calibrate(colors3, 300);
-    colors4 = readcsv("etc/400mg.csv");
+    colors4 = readcsv("test/400mg.csv");
     float laterresult = model->evaluate(colors4);
     model->calibrate(colors4, 400);
 
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     //std::cout << exp.getCSVData();
     //std::cout << exp.getTextData();
 
-    colors5 = readcsv("etc/unknown.csv");
+    colors5 = readcsv("test/unknown.csv");
 
     float result = model->evaluate(colors);
     std::cout << "\n---------------------\n  40 Result: " << result << "\n" << model->getStatData()
@@ -180,6 +180,6 @@ int main(int argc, char** argv)
     //exp.exportDiagnosticRun();
     //std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
 
-    std::cout << "\n\n\n\n\n" << model->secretGetFinalMat() << "\n\n";
+    std::cout << "\n\n\n\n\n" << model->getRawCalData() << "\n\n";
 
 }

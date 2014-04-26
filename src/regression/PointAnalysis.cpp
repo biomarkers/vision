@@ -49,6 +49,8 @@ std::string PointAnalysis::getStatString()
 
 float PointAnalysis::graphPoint(int second)
 {
+    if(second < mBegin || second > mEnd)
+        return 0;
     return mAvg + 0 * second;
 }
 

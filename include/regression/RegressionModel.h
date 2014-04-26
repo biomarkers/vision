@@ -28,8 +28,6 @@ typedef boost::shared_ptr<RegressionModel> ModelPtr;
 
 class RegressionModel{
 public:
-    cv::Mat secretGetFinalMat();
-
     friend class RegressionFactory;
 
     //evaluate a test sample, return the estimation

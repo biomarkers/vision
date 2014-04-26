@@ -4,11 +4,6 @@
 #include <iostream>
 #include <fstream>
 
-cv::Mat RegressionModel::secretGetFinalMat()
-{
-    return mCalibrationData;
-}
-
 RegressionModel::RegressionModel()
 {
     mWasEvaluation = false;

@@ -51,7 +51,6 @@ float LinearRegression::getWeight()
         return mWeights.row(0).at<float>(1);
     else
         return 0; //should throw some error here, get around to that later
-
 }
 
 std::string LinearRegression::getStatString()
@@ -68,6 +67,8 @@ std::string LinearRegression::getStatString()
 
 float LinearRegression::graphPoint(int second)
 {
+    if(second < mBegin || second > mEnd)
+        return 0;
     return mWeights.row(0).at<float>(0) + mWeights.row(1).at<float>(0) * second;
 }
 
