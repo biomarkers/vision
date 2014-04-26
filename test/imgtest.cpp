@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
 
   BiomarkerImageProcessor processor;
 
+  cv::namedWindow("blur_win", CV_WINDOW_AUTOSIZE);
+  cv::namedWindow("canny_win", CV_WINDOW_AUTOSIZE);
   cv::namedWindow("img_win", CV_WINDOW_AUTOSIZE);
   cv::VideoCapture cap(argv[1]);
 
