@@ -4,6 +4,11 @@
 #include <iostream>
 #include <fstream>
 
+cv::Mat RegressionModel::secretGetFinalMat()
+{
+    return mCalibrationData;
+}
+
 RegressionModel::RegressionModel()
 {
     mWasEvaluation = false;
@@ -319,7 +324,7 @@ cv::Mat RegressionModel::getModelWeights()
     {
         weights.at<float>(c+1) = mComponents[c]->getWeight();
     }
-    //std::cout << "GettingWeights: " << weights << std::endl;
+    //std::cout << "Getting Weights: " << weights << std::endl;
     return weights;
 }
 

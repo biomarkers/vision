@@ -115,10 +115,10 @@ int main(int argc, char** argv)
     float laterresult = model->evaluate(colors4);
     model->calibrate(colors4, 400);
 
-    DataExporter exp(model);
-    exp.exportCalibration();
-    std::cout << exp.getCSVData();
-    std::cout << exp.getTextData();
+    //DataExporter exp(model);
+    //exp.exportCalibration();
+    //std::cout << exp.getCSVData();
+    //std::cout << exp.getTextData();
 
     colors5 = readcsv("etc/unknown.csv");
 
@@ -177,9 +177,9 @@ int main(int argc, char** argv)
     }
 
     model->evaluate(colors5);
-    exp.exportDiagnosticRun();
-    std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
+    //exp.exportDiagnosticRun();
+    //std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
 
-
+    std::cout << "\n\n\n\n\n" << model->secretGetFinalMat() << "\n\n";
 
 }
