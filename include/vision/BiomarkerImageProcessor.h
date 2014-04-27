@@ -14,10 +14,10 @@ public:
   void reset();
 
   /* Process a single input frame and store the result. */
-  cv::SerializableScalar process(cv::Mat frame);
+  std::vector<cv::SerializableScalar> process(cv::Mat frame, std::vector<cv::Vec3f> regions);
 
   /* Return the list of samples for the current test. */
-  std::vector<cv::SerializableScalar> getSamples() { return samples; }
+  std::vector<std::vector<cv::SerializableScalar>> getSamples() { return samples; }
 
   /* Options */
   bool isCircleDetectionEnabled() { return this->circleDetectionEnabled; }
@@ -28,16 +28,19 @@ public:
   void setCircleCenterX(float x) { this->circleCenterX = x; }
   void setCircleCenterY(float y) { this->circleCenterY = y; }
   void setCircleRadius(float r) { this->circleRadius = r; }
+  cv::Scalar getAverageStdDev() { return this->averageStdDev; }
 
 private:
   boost::timer::cpu_timer timer;
-  std::vector<cv::SerializableScalar> samples;
+  std::vector<std::vector<cv::SerializableScalar>> samples;
   float circleCenterX, circleCenterY;
   float circleRadius;
   bool circleDetectionEnabled;
 
-  std::vector<cv::Vec3f> findSampleCircles(cv::Mat frame);
-  cv::Scalar sampleSlide(cv::Mat frame, cv::Vec3f sampleCircle);
+  cv::Scalar averageStdDev;
+  int frameCount = 0;
+
+  cv::Scalar sampleSlide(cv::Mat frame, cv::Mat roi);
 };
 
 #endif

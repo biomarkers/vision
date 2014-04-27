@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "vision/BiomarkerImageProcessor.h"
+#include "vision/CircularSampleAreaDetector.h"
 #include "persistence/DataStore.h"
 #include "regression/RegressionFactory.h"
 #include "regression/RegressionModel.h"
@@ -75,12 +76,40 @@ int main(int argc, char **argv) {
 
   cv::Mat frame;
   // skipNFrames(cap, 8730, &frame);
+
+  std::vector<cv::Vec3f> circles;
   while(true) {
     bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
 
     if(got_frame) {
-      cv::Scalar sample = processor.process(frame);
-      std::cout << sample[0] << "," << sample[1] << "," << sample[2] << "," << sample[3] << std::endl;
+      CircularSampleAreaDetector detector;
+      circles = detector.detect(frame);
+
+      // Just to draw the circle...
+      processor.process(frame, circles);
+
+      cv::imshow("img_win", frame);
+    } else {
+      break;
+    }
+
+    char key = cvWaitKey(0);
+    if(key == 'y') {
+      break;
+    }
+  }
+
+  processor.reset();
+
+  while(true) {
+    bool got_frame = skipNFrames(cap, FRAME_SKIP, &frame);
+
+    if(got_frame) {
+      std::vector<cv::SerializableScalar> samples = processor.process(frame, circles);
+      if(samples.size() > 0) {
+        cv::SerializableScalar sample = samples[0];
+        std::cout << sample[0] << "," << sample[1] << "," << sample[2] << "," << sample[3] << "," << processor.getAverageStdDev()[0] << std::endl;
+      }
 
       cv::imshow("img_win", frame);
     } else {
