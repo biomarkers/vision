@@ -33,6 +33,10 @@ void BiomarkerImageProcessor::reset() {
 }
 
 std::vector<cv::SerializableScalar> BiomarkerImageProcessor::process(cv::Mat frame, std::vector<cv::Vec3f> circles) {
+  if(this->samples.size() < circles.size()) {
+    this->samples.push_back(std::vector<cv::SerializableScalar>());
+  }
+
   std::vector<cv::SerializableScalar> frameSamples;
   for(size_t i = 0; i < circles.size(); i++) {
     // Sample is a 4-vec of [R, G, B, time]
@@ -51,9 +55,9 @@ std::vector<cv::SerializableScalar> BiomarkerImageProcessor::process(cv::Mat fra
 
     cv::SerializableScalar ser(sample);
     frameSamples.push_back(sample);
-  }
 
-  this->samples.push_back(frameSamples);
+    this->samples[i].push_back(ser);
+  }
 
   return frameSamples;
 }
