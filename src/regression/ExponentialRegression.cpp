@@ -91,6 +91,8 @@ float ExponentialRegression::getWeight()
 
 float ExponentialRegression::graphPoint(int second)
 {
+    if(second < mBegin || second > mEnd)
+        return 0;
     return exp(mWeight * second) + mDisp;
 }
 

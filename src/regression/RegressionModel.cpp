@@ -319,7 +319,7 @@ cv::Mat RegressionModel::getModelWeights()
     {
         weights.at<float>(c+1) = mComponents[c]->getWeight();
     }
-    //std::cout << "GettingWeights: " << weights << std::endl;
+    //std::cout << "Getting Weights: " << weights << std::endl;
     return weights;
 }
 

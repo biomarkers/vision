@@ -58,6 +58,9 @@ public:
     float getBlue(int second);
     //get a point to graph for the last regression run on the given component
     float getRegressionPoint(int component, int second);
+    //get a point to graph for the pca'd regression stuff
+    //float getFinalRegressionPoint(int ???);
+
 
     //get currently graphed calibration run
     int getGraphedCalibration();
