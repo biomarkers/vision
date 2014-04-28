@@ -113,6 +113,9 @@ private:
     //private unknown evaluation
     float evaluateUnknown(cv::Mat weights);
 
+    //private unknown evaluation using the PCA analysis
+    float evaluatePCA(cv::Mat weights);
+
     //run the model
     void runModel(std::vector<cv::SerializableScalar> colors);
 
@@ -122,6 +125,15 @@ private:
     //binary search for value near index on given column of matrix
     float getDataPoint(int index, int column, std::vector<cv::SerializableScalar>* pvec);
 
+    //create the PCA transformation
+    void createPCATransform();
+
+    //run the PCA transformation
+    cv::Mat runPCA(cv::Mat data);
+
+    //strip the first column off a matrix
+    cv::Mat stripFirstCol(cv::Mat data);
+
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mHue, mTime;
 
@@ -130,6 +142,12 @@ private:
 
     //linear regression model for the final weights
     ComponentPtr mFinalComponent;
+    ComponentPtr mFinalPCA;
+
+    //PCA object for the final transformation
+    cv::PCA mPCA;
+
+    bool mPCAdone;
 
     //calibration test outcomes, in matrix format
     //rows of form [y, w1, w2, w3...]
@@ -148,6 +166,7 @@ private:
 
     //final regression weights for use in the evaluation of an unknown
     cv::SerializableMat mFinalWeights;
+    cv::SerializableMat mPCAWeights;
 
     //name of the model, eg. "Chad's Baller Glucose Model"
     std::string mModelName;
@@ -177,10 +196,13 @@ private:
     {
         std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCA
                 & mCalibrationData & mRawCalibrationData & mWasEvaluation
                 & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mModelName
                 & mTestName & mCircleCenter & mCircleRadius & mHasCircle & mLastEvaluation;
+        //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
+        //will restore mPCAdone as well
+        createPCATransform();
     }
 
 };

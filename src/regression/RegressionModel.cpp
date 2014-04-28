@@ -10,8 +10,10 @@ RegressionModel::RegressionModel()
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
+    mFinalPCA.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
     mHasCircle = false;
+    mPCAdone = false;
 }
 
 //evaluate a test sample, return the estimation
@@ -23,6 +25,8 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
     runModel(colors);
     cv::Mat weights = getModelWeights();
     mLastEvaluation = evaluateUnknown(weights);
+    cv::Mat weightsPCA = runPCA(weights);
+    std::cout << "PCA evaluation: " << evaluatePCA(weightsPCA);
     return mLastEvaluation;
 }
 
@@ -31,19 +35,38 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
                float calibrationValue)
 {
     mWasEvaluation = false;
+    //push back the color data to be stored in the database
     mRawCalibrationData.push_back(colors);
+    //run the model components over the new color data
     runModel(colors);
 
     //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
 
+    //grab the weights returned by the components
     cv::Mat weights = getModelWeights();
+    //slap in the y value given by the user
     weights.at<float>(0) = calibrationValue;
+    //push this back to the set of total calibration data
     mCalibrationData.push_back(weights);
+
+    //do the planar evaluation with the final component
     mFinalComponent->evaluate(mCalibrationData);
 
     //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
 
     mFinalWeights = mFinalComponent->mWeights;
+
+    //calculate a new PCA transformation
+    createPCATransform();
+
+    //do a linear regression on the PCA'd data
+    if(mPCAdone)
+    {
+        mFinalPCA->evaluate(runPCA(mCalibrationData));
+        mPCAWeights = mFinalPCA->mWeights;
+    }
+
+    //set the calibration just done as the one to graph
     mCalibrationToGraph = mCalibrationData.size().height - 1;
 }
 
@@ -56,6 +79,71 @@ void RegressionModel::dryCalibrate()
 void RegressionModel::superSecretCalibrationOverride(cv::Mat newCalibration)
 {
     mCalibrationData = newCalibration;
+}
+
+void RegressionModel::createPCATransform()
+{
+    std::cout << "Creating PCA transform\n";
+
+    mPCAdone = false;
+
+    if(mCalibrationData.size().height >= 2)
+    {
+        //return one principal components
+        //this is easy to graph on the iphone, and won't affect models using only
+        //a single component
+        cv::Mat dataMinusYVals = stripFirstCol(mCalibrationData);
+
+        std::cout << "actually doing PCA fn\n";
+
+        mPCA = cv::PCA(dataMinusYVals, cv::Mat(), CV_PCA_DATA_AS_ROW, 1);
+        mPCAdone = true;
+    }
+}
+
+cv::Mat RegressionModel::runPCA(cv::Mat data)
+{
+    std::cout << "running PCA transform\n";
+
+    cv::Mat newData = stripFirstCol(data);
+    if(mPCAdone)
+    {
+        cv::Mat result = mPCA.project(newData);
+        std::cout << "projected!\n";
+        cv::Mat result2(result.size().height, result.size().width+1, CV_32F);
+
+        std::cout << "data height: " << data.size().height << "\n";
+        std::cout << "result height: " << result.size().height << "\n";
+
+        std::cout << "result width: " << result.size().width << "\n";
+
+
+        data.col(0).copyTo(result2.col(0));
+        std::cout << "copied first column\n";
+        //should only be one more column after pca
+        result.col(0).copyTo(result2.col(1));
+        return result2;
+    }
+    return data;
+}
+
+cv::Mat RegressionModel::stripFirstCol(cv::Mat data)
+{
+    std::cout << "stripping column\n";
+
+    //std::cout << "data width: " << data.size().width << "\n";
+
+    cv::Mat dataMinusYVals(data.size().height, data.size().width - 1, CV_32F);
+    
+    //std::cout << "dmy width: " << dataMinusYVals.size().width << "\n";
+
+    for(int c = 1; c < data.size().width; c++)
+    {
+        //std::cout << c << std::endl;
+        data.col(c).copyTo(dataMinusYVals.col(c-1));
+    }
+    //std::cout << "done\n";
+    return dataMinusYVals;
 }
 
 void RegressionModel::setIndices(int time, int red, int green, int blue, int hue)
@@ -262,6 +350,15 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
 {
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
+
+    return result.at<float>(0);
+}
+
+//private evaluation using PCA
+float RegressionModel::evaluatePCA(cv::Mat weights)
+{
+    std::cout << mPCAWeights << "\n" << weights << "\n";
+    cv::Mat result = mPCAWeights.t() * weights.t();
 
     return result.at<float>(0);
 }
