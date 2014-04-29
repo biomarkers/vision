@@ -76,9 +76,9 @@ int main(int argc, char** argv)
     //std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
     //std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
-    //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
     //std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
-    //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::GREEN);
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::GREEN);
     //std::cout << "runtime " << factory.getCreatedModel()->getModelRunTime() << std::endl;
     //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);

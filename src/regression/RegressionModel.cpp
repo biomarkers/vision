@@ -83,7 +83,7 @@ void RegressionModel::superSecretCalibrationOverride(cv::Mat newCalibration)
 
 void RegressionModel::createPCATransform()
 {
-    std::cout << "Creating PCA transform\n";
+    //std::cout << "Creating PCA transform\n";
 
     mPCAdone = false;
 
@@ -94,7 +94,7 @@ void RegressionModel::createPCATransform()
         //a single component
         cv::Mat dataMinusYVals = stripFirstCol(mCalibrationData);
 
-        std::cout << "actually doing PCA fn\n";
+        //std::cout << "actually doing PCA fn\n";
 
         mPCA = cv::PCA(dataMinusYVals, cv::Mat(), CV_PCA_DATA_AS_ROW, 1);
         mPCAdone = true;
@@ -103,23 +103,22 @@ void RegressionModel::createPCATransform()
 
 cv::Mat RegressionModel::runPCA(cv::Mat data)
 {
-    std::cout << "running PCA transform\n";
+    //std::cout << "running PCA transform\n";
 
     cv::Mat newData = stripFirstCol(data);
     if(mPCAdone)
     {
         cv::Mat result = mPCA.project(newData);
-        std::cout << "projected!\n";
+        //std::cout << "projected!\n";
         cv::Mat result2(result.size().height, result.size().width+1, CV_32F);
 
-        std::cout << "data height: " << data.size().height << "\n";
-        std::cout << "result height: " << result.size().height << "\n";
-
-        std::cout << "result width: " << result.size().width << "\n";
+        //std::cout << "data height: " << data.size().height << "\n";
+        //std::cout << "result height: " << result.size().height << "\n";
+        //std::cout << "result width: " << result.size().width << "\n";
 
 
         data.col(0).copyTo(result2.col(0));
-        std::cout << "copied first column\n";
+        //std::cout << "copied first column\n";
         //should only be one more column after pca
         result.col(0).copyTo(result2.col(1));
         return result2;

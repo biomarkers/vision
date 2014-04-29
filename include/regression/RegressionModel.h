@@ -198,7 +198,7 @@ private:
         (void)version;
         ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCA
                 & mCalibrationData & mRawCalibrationData & mWasEvaluation
-                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mModelName
+                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mPCAWeights & mModelName
                 & mTestName & mCircleCenter & mCircleRadius & mHasCircle & mLastEvaluation;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
         //will restore mPCAdone as well
