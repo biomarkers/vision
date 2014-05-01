@@ -49,17 +49,37 @@ public:
     //number of calibration runs stored
     int getNumCalibrations();
 
-    ///grab the last frame we need to look at
+    //grab the last frame we need to look at
     int getModelRunTime();
 
-    //data grabbing functions to get the raw data from the last run (calibration or evaluation)
+    /*
+        Grab lines for the graphs of each calibration/evaluation run. These functions operate
+        on either the calibration given in mCalibrationToGraph, or the last evaluation run
+    */
+
+    //data grabbing functions to get the raw rgb data from the last run (calibration or evaluation)
     float getRed(int second);
     float getGreen(int second);
     float getBlue(int second);
-    //get a point to graph for the last regression run on the given component
+    //get a point to graph for the last regression run on the given component,
     float getRegressionPoint(int component, int second);
-    //get a point to graph for the pca'd regression stuff
-    //float getFinalRegressionPoint(int ???);
+
+    /*
+        Grab points for final regression graphs. These are all done in post-PCA space.
+        Possible graphs are:
+            Planar regression
+            PCA Linear regression
+            PCA LM fit
+    */
+
+    //here are the points for the calibration values that we're performing regression on
+    float getCalibrationPointPostPCA(int index);
+    //get a point to graph for the pca'd planar regression line
+    //float getPlanarRegressionLine(int ???);
+    //get a point to graph for the linear regression line in PCA space
+    //float getPCALinearRegressionLine(int ???);
+    //get a point to graph for the LM best fit line in PCA space
+    //float getPCAFitLine(int ???);
 
 
     //get currently graphed calibration run
@@ -90,10 +110,11 @@ public:
     bool isCalibrated();
 
     //set the circle center and size
-    void setCircle(float center, float radius);
+    void setCircle(float centerx, float centery, float radius);
 
     //get the circle center and size
-    float getCircleCenter();
+    float getCircleCenterX();
+    float getCircleCenterY();
     float getCircleRadius();
 
     //query the important UI things about each model component
@@ -175,7 +196,8 @@ private:
     std::string mTestName;
 
     //center of circle of interest
-    float mCircleCenter;
+    float mCircleCenterX;
+    float mCircleCenterY;
 
     //radius of circle of interest
     float mCircleRadius;
@@ -199,7 +221,7 @@ private:
         ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCA
                 & mCalibrationData & mRawCalibrationData & mWasEvaluation
                 & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mPCAWeights & mModelName
-                & mTestName & mCircleCenter & mCircleRadius & mHasCircle & mLastEvaluation;
+                & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
         //will restore mPCAdone as well
         createPCATransform();

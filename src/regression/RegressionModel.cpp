@@ -275,22 +275,31 @@ std::string RegressionModel::getStatData()
     return data;
 }
 
-void RegressionModel::setCircle(float center, float radius)
+void RegressionModel::setCircle(float centerx, float centery, float radius)
 {
     if(mHasCircle)
         return;
-    mCircleCenter = center;
+    mCircleCenterX = centerx;
+    mCircleCenterY = centery;
     mCircleRadius = radius;
     mHasCircle = true;
 }
 
 
-float RegressionModel::getCircleCenter()
+float RegressionModel::getCircleCenterX()
 {
     if(!mHasCircle)
         return -1;
-    return mCircleCenter;
+    return mCircleCenterX;
 }
+
+float RegressionModel::getCircleCenterY()
+{
+    if(!mHasCircle)
+        return -1;
+    return mCircleCenterY;
+}
+
 
 float RegressionModel::getCircleRadius()
 {
