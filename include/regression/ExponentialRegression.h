@@ -16,6 +16,7 @@ class ExponentialRegression : public ModelComponent
 public:
     ExponentialRegression(float begin, float end, ModelComponent::VariableType variable);
     virtual void evaluate(cv::Mat x);
+    virtual float getEstimation(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
     virtual std::string getStatString();

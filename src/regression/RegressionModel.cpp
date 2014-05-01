@@ -10,7 +10,7 @@ RegressionModel::RegressionModel()
     //blue because that's just how I'm feelin'
     //...not really it just doesn't matter
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
-    mFinalPCA.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
+    mFinalPCALinear.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
     mHasCircle = false;
     mPCAdone = false;
@@ -62,8 +62,8 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     //do a linear regression on the PCA'd data
     if(mPCAdone)
     {
-        mFinalPCA->evaluate(runPCA(mCalibrationData));
-        mPCAWeights = mFinalPCA->mWeights;
+        mFinalPCALinear->evaluate(runPCA(mCalibrationData));
+        mPCALinearWeights = mFinalPCALinear->mWeights;
     }
 
     //set the calibration just done as the one to graph
@@ -358,15 +358,15 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
 {
     std::cout << mFinalWeights << "\n" << weights << "\n";
     cv::Mat result = mFinalWeights.t() * weights.t();
-
-    return result.at<float>(0);
+    std::cout << "result: " << mFinalComponent->getEstimation(weights) << "\n";
+    return mFinalComponent->getEstimation(weights);
 }
 
 //private evaluation using PCA
 float RegressionModel::evaluatePCA(cv::Mat weights)
 {
-    std::cout << mPCAWeights << "\n" << weights << "\n";
-    cv::Mat result = mPCAWeights.t() * weights.t();
+    std::cout << mPCALinearWeights << "\n" << weights << "\n";
+    cv::Mat result = mPCALinearWeights.t() * weights.t();
 
     return result.at<float>(0);
 }
@@ -424,7 +424,6 @@ cv::Mat RegressionModel::getModelWeights()
     {
         weights.at<float>(c+1) = mComponents[c]->getWeight();
     }
-    //std::cout << "Getting Weights: " << weights << std::endl;
     return weights;
 }
 

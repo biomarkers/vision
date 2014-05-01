@@ -37,6 +37,12 @@ void ExponentialRegression::evaluate(cv::Mat x)
     mWeights.row(1).at<float>(0) = mWeight;
 }
 
+float ExponentialRegression::getEstimation(cv::Mat x)
+{
+    //assuming x will be [1, x]...
+    return exp(mWeight * x.row(0).at<float>(1)) + mDisp;
+}
+
 cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
 {
     int count = 0, bad_count = 0;

@@ -65,13 +65,16 @@ public:
     float getRegressionPoint(int component, int second);
 
     /*
-        Grab points for final regression graphs. These are all done in post-PCA space.
+        Grab points for final regression graphs. These are all done in PCA space.
         Possible graphs are:
             Planar regression
             PCA Linear regression
             PCA LM fit
+            PCA Quadratic regression
     */
 
+    //get the x range of the PCA space
+    void getPCASpaceRange(float &left, float &right);
     //here are the points for the calibration values that we're performing regression on
     float getCalibrationPointPostPCA(int index);
     //get a point to graph for the pca'd planar regression line
@@ -80,6 +83,8 @@ public:
     //float getPCALinearRegressionLine(int ???);
     //get a point to graph for the LM best fit line in PCA space
     //float getPCAFitLine(int ???);
+    //get a point for the quadratic regression in PCA space
+    //float getPCAQuadFitLine(int ???);
 
 
     //get currently graphed calibration run
@@ -161,14 +166,29 @@ private:
     //list of the components that make up the model
     std::vector<ComponentPtr> mComponents;
 
-    //linear regression model for the final weights
+    /*
+        Regression Components for the final model
+    */
+    //n-planar regression
     ComponentPtr mFinalComponent;
-    ComponentPtr mFinalPCA;
+    //PCA linear fit
+    ComponentPtr mFinalPCALinear;
+    //PCA quadratic fit
+    ComponentPtr mFinalPCAQuad;
+    //PCA LM fit
+    ComponentPtr mFinalPCALM;
 
-    //PCA object for the final transformation
+    //PCA object for the transformation to PCA space
     cv::PCA mPCA;
-
+    //has the PCA transform been built?
     bool mPCAdone;
+
+    /*
+        Final regression weights for use in the evaluation of an unknown
+    */
+    cv::SerializableMat mFinalWeights;
+    cv::SerializableMat mPCALinearWeights;
+    cv::SerializableMat mPCAQuadweights;
 
     //calibration test outcomes, in matrix format
     //rows of form [y, w1, w2, w3...]
@@ -180,14 +200,11 @@ private:
 
     //was the last run a calibration or an evaluation?
     bool mWasEvaluation;
+    //if calibration, which one are we graphing?
     int mCalibrationToGraph;
 
     //raw rgb data for last evaluation
     std::vector<cv::SerializableScalar> mRawEvaluationData;
-
-    //final regression weights for use in the evaluation of an unknown
-    cv::SerializableMat mFinalWeights;
-    cv::SerializableMat mPCAWeights;
 
     //name of the model, eg. "Chad's Baller Glucose Model"
     std::string mModelName;
@@ -218,9 +235,9 @@ private:
     {
         std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCA
+        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCALinear
                 & mCalibrationData & mRawCalibrationData & mWasEvaluation
-                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mPCAWeights & mModelName
+                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mPCALinearWeights & mModelName
                 & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
         //will restore mPCAdone as well

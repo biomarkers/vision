@@ -25,14 +25,26 @@ class ModelComponent
 {
 public:
     /*
-     * concrete classes must implement some evaluation of a
+     * Concrete classes must implement some evaluation of a
      * regression between mBegin and mEnd
      *
      * x should have the dependent variable in the first column
      * and the independent variable in the remaining columns
      * eg: [y, x]
+     *
+     * This will set the weights for the regression over the
+     * given data
      */
     virtual void evaluate(cv::Mat x) = 0;
+
+    /*
+     *  Concrete classes must also implement an evaluation function
+     *  to generate an estimation given a single point
+     *
+     *  This means that mWeights must be preserved in between evaluation
+     *  runs, the user assumes this is based on the last regression
+     */
+    virtual float getEstimation(cv::Mat x) = 0;
 
     //concrete classes must implement this-
     //obtain the results of the regression, for now just a float

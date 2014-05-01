@@ -45,6 +45,11 @@ void LinearRegression::evaluate(cv::Mat x)
     mWeights = weights;
 }
 
+float LinearRegression::getEstimation(cv::Mat x)
+{
+    return cv::Mat(mWeights.t() * x.t()).at<float>(0);
+}
+
 float LinearRegression::getWeight()
 {
     if(mWeights.size().height > 0)

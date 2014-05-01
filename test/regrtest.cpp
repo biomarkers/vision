@@ -63,8 +63,6 @@ int main(int argc, char** argv)
     std::cout << "Jollies!\n";
 
     ModelPtr model;
-    ModelPtr testmodel;
-
 
     RegressionFactory factory;
 

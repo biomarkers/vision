@@ -30,6 +30,12 @@ void PointAnalysis::evaluate(cv::Mat x)
     }
 }
 
+float PointAnalysis::getEstimation(cv::Mat x)
+{
+    (void) x;
+    return mAvg;
+}
+
 float PointAnalysis::getWeight()
 {
     return mAvg;
