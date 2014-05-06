@@ -58,6 +58,7 @@ public:
         POINT = 0,
         LINEAR,
         EXPONENTIAL,
+        QUADRATIC,
         INVALID_TYPE
     };
 
@@ -76,6 +77,8 @@ public:
 
     //add a friend to look at our privates, lulz
     friend class RegressionModel;
+    //also because lazy...
+    friend class QuadraticRegression;
 protected:
     ModelComponent() {}
     //region of frames to analyze between

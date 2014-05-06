@@ -52,6 +52,20 @@ public:
     //grab the last frame we need to look at
     int getModelRunTime();
 
+    enum RegressionType{
+        PLANAR = 0,
+        PCA_LINEAR,
+        PCA_QUADRATIC,
+        PCA_EXPONENTIAL,
+        INVALID_TYPE
+    };
+
+    RegressionType mFinalRegressionType;
+
+    //get and set the regression type
+    RegressionType getCurrentRegressionType();
+    void setRegressionType(RegressionType type);
+
     /*
         Grab lines for the graphs of each calibration/evaluation run. These functions operate
         on either the calibration given in mCalibrationToGraph, or the last evaluation run
@@ -69,22 +83,16 @@ public:
         Possible graphs are:
             Planar regression
             PCA Linear regression
-            PCA LM fit
+            PCA Exponential regression
             PCA Quadratic regression
     */
 
     //get the x range of the PCA space
     void getPCASpaceRange(float &left, float &right);
     //here are the points for the calibration values that we're performing regression on
-    float getCalibrationPointPostPCA(int index);
-    //get a point to graph for the pca'd planar regression line
-    //float getPlanarRegressionLine(int ???);
-    //get a point to graph for the linear regression line in PCA space
-    //float getPCALinearRegressionLine(int ???);
-    //get a point to graph for the LM best fit line in PCA space
-    //float getPCAFitLine(int ???);
-    //get a point for the quadratic regression in PCA space
-    //float getPCAQuadFitLine(int ???);
+    void getCalibrationPointPostPCA(int index, float &xval, float &yval);
+    //get a point to graph for the regression type mFinalRegressionType in PCA space
+    float getFinalRegressionLine(int PCAindex);
 
 
     //get currently graphed calibration run
@@ -176,24 +184,20 @@ private:
     //PCA quadratic fit
     ComponentPtr mFinalPCAQuad;
     //PCA LM fit
-    ComponentPtr mFinalPCALM;
+    ComponentPtr mFinalPCAExponential;
 
     //PCA object for the transformation to PCA space
     cv::PCA mPCA;
     //has the PCA transform been built?
     bool mPCAdone;
 
-    /*
-        Final regression weights for use in the evaluation of an unknown
-    */
-    cv::SerializableMat mFinalWeights;
-    cv::SerializableMat mPCALinearWeights;
-    cv::SerializableMat mPCAQuadweights;
-
     //calibration test outcomes, in matrix format
     //rows of form [y, w1, w2, w3...]
     //where wi is the regression output from the ith model component
     cv::SerializableMat mCalibrationData;
+    //calibration test outcomes in PCA space
+    //rows of [y, x]
+    cv::SerializableMat mPCACalibrationData;
 
     //raw color data of calibration tests, so shit can be graphed later on yo
     std::vector<std::vector<cv::SerializableScalar> > mRawCalibrationData;
@@ -236,8 +240,8 @@ private:
         std::cout << "archiving!\n\n";
         (void)version;
         ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCALinear
-                & mCalibrationData & mRawCalibrationData & mWasEvaluation
-                & mCalibrationToGraph & mRawEvaluationData & mFinalWeights & mPCALinearWeights & mModelName
+                & mFinalPCAQuad & mFinalPCAExponential & mCalibrationData & mRawCalibrationData & mWasEvaluation
+                & mCalibrationToGraph & mRawEvaluationData & mModelName
                 & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
         //will restore mPCAdone as well

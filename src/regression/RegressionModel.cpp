@@ -26,7 +26,8 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
     cv::Mat weights = getModelWeights();
     mLastEvaluation = evaluateUnknown(weights);
     cv::Mat weightsPCA = runPCA(weights);
-    std::cout << "PCA evaluation: " << evaluatePCA(weightsPCA);
+    std::cout << "PCA Linear evaluation: " << evaluatePCA(weightsPCA);
+
     return mLastEvaluation;
 }
 
@@ -54,16 +55,15 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
 
     //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
 
-    mFinalWeights = mFinalComponent->mWeights;
-
     //calculate a new PCA transformation
     createPCATransform();
 
     //do a linear regression on the PCA'd data
     if(mPCAdone)
     {
-        mFinalPCALinear->evaluate(runPCA(mCalibrationData));
-        mPCALinearWeights = mFinalPCALinear->mWeights;
+        mPCACalibrationData = runPCA(mCalibrationData);
+        mFinalPCALinear->evaluate(mPCACalibrationData);
+        //mPCALinearWeights = mFinalPCALinear->mWeights;
     }
 
     //set the calibration just done as the one to graph
@@ -73,7 +73,6 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
 void RegressionModel::dryCalibrate()
 {
     mFinalComponent->evaluate(mCalibrationData);
-    mFinalWeights = mFinalComponent->mWeights;
 }
 
 void RegressionModel::superSecretCalibrationOverride(cv::Mat newCalibration)
@@ -173,6 +172,16 @@ int RegressionModel::getModelRunTime()
     return last;
 }
 
+RegressionModel::RegressionType RegressionModel::getCurrentRegressionType()
+{
+    return mFinalRegressionType;
+}
+
+void RegressionModel::setRegressionType(RegressionModel::RegressionType type)
+{
+    mFinalRegressionType = type;
+}
+
 //data grabbing functions to get the raw data from the last run (calibration or evaluation)
 float RegressionModel::getRed(int second)
 {
@@ -203,6 +212,47 @@ float RegressionModel::getRegressionPoint(int component, int second)
     if(mComponents.size() > component)
         return mComponents[component]->graphPoint(second);
     return 0;
+}
+
+void RegressionModel::getPCASpaceRange(float &left, float &right)
+{
+    left = right = 0;
+    if(mPCACalibrationData.size().height > 0)
+    {
+        left = right = mPCACalibrationData.row(0).at<float>(1);
+        for(int c = 0; c < mPCACalibrationData.size().height; c++)
+        {
+            float val = mPCACalibrationData.row(c).at<float>(1);
+            if(val < left)
+                left = val;
+            if(val > right)
+                right = val;
+        }
+    }
+}
+
+void RegressionModel::getCalibrationPointPostPCA(int index, float &xval, float &yval)
+{
+    xval = mPCACalibrationData.row(index).at<float>(1);
+    yval = mPCACalibrationData.row(index).at<float>(0);
+}
+
+float RegressionModel::getFinalRegressionLine(int PCAindex)
+{
+    cv::Mat x(1,2,CV_32F,1.f);
+    float val = static_cast<int>(PCAindex);
+    x.row(0).at<float>(1) = val;
+    switch(mFinalRegressionType)
+    {
+    case PLANAR:
+        return 0; //planar stuff...
+    case PCA_LINEAR:
+        return mFinalPCALinear->getEstimation(x);
+    case PCA_QUADRATIC:
+        return mFinalPCAQuad->getEstimation(x);
+    case PCA_EXPONENTIAL:
+        return mFinalPCAExponential->getEstimation(x);
+    }
 }
 
 //binary search for value near index on given column of matrix
@@ -356,19 +406,19 @@ void RegressionModel::pushComponent(ComponentPtr ptr)
 //private unknown evaluation
 float RegressionModel::evaluateUnknown(cv::Mat weights)
 {
-    std::cout << mFinalWeights << "\n" << weights << "\n";
-    cv::Mat result = mFinalWeights.t() * weights.t();
-    std::cout << "result: " << mFinalComponent->getEstimation(weights) << "\n";
+    //std::cout << mFinalWeights << "\n" << weights << "\n";
+    //cv::Mat result = mFinalWeights.t() * weights.t();
+    //std::cout << "result: " << mFinalComponent->getEstimation(weights) << "\n";
     return mFinalComponent->getEstimation(weights);
 }
 
 //private evaluation using PCA
 float RegressionModel::evaluatePCA(cv::Mat weights)
 {
-    std::cout << mPCALinearWeights << "\n" << weights << "\n";
-    cv::Mat result = mPCALinearWeights.t() * weights.t();
-
-    return result.at<float>(0);
+    //std::cout << mPCALinearWeights << "\n" << weights << "\n";
+    //cv::Mat result = mPCALinearWeights.t() * weights.t();
+    //return result.at<float>(0);
+    return mFinalPCALinear->getEstimation(weights);
 }
 
 void RegressionModel::runModel(std::vector<cv::SerializableScalar> colors)

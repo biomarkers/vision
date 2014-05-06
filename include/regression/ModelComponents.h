@@ -4,5 +4,6 @@
 #include "regression/ExponentialRegression.h"
 #include "regression/PointAnalysis.h"
 #include "regression/LinearRegression.h"
+#include "regression/QuadraticRegression.h"
 
 #endif

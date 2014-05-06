@@ -22,9 +22,7 @@ public:
 private:
     ModelPtr mTempModel;
 
-
     std::string mOutstring;
-    //std::string mBasepath;
 };
 
 #endif
