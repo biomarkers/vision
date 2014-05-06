@@ -28,6 +28,13 @@ void LinearRegression::evaluate(cv::Mat x)
         x.col(c).copyTo(independent.col(c));
     }
 
+    //debug crap
+    dbgi = independent;
+    dbgi2 = independent.t() * independent;
+    dbgi3 = dbgi2 * independent.t();
+    dbgdep = dependent;
+    //
+
     weights = (independent.t() * independent).inv() * independent.t() * dependent;
 
     float se = 0;

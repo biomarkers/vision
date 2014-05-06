@@ -19,11 +19,10 @@ void ExponentialRegression::evaluate(cv::Mat x)
     float sem = getSquaredFromMean(x);
     cv::Mat y;
 
-    std::cout << x << "\n\n";
-
-    y = logMat(x, .98);
-
-    std::cout << y << "\n\n";
+    //for now dont use a displacement to account for y=ln(x)+c,
+    //just model y=ln(x)
+    //this is crap but eh......
+    y = logMat(x, .0);
 
     mLinearComponent->evaluate(y);
     mWeight = mLinearComponent->getWeight();
@@ -90,7 +89,12 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
 std::string ExponentialRegression::getStatString()
 {
     std::ostringstream data;
-    data << "Exponential Regression Component R^2 = " << mR2 << "\n";
+    data << "Exponential Regression Component\n";
+    insertVar(&data);
+    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    data << "y = exp(" << mLinearComponent->mWeights.row(0).at<float>(1) << "t + " << mLinearComponent->mWeights.row(0).at<float>(0)
+         << ") + " << mDisp << "\n";
+    data << "R^2 = " << mR2 << "\n";
     return data.str();
 }
 

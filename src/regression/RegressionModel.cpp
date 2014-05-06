@@ -67,6 +67,13 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     //do the planar evaluation with the final component
     mFinalComponent->evaluate(mCalibrationData);
 
+
+
+    //debug stuff...
+    std::cout << "planar regression weight dumps: \n";
+    std::cout << mFinalComponent->mWeights << "\n";
+    std::cout << "ind:\n" << ((LinearRegression*)(ModelComponent*)(mFinalComponent.get()))->dbgi;
+
     //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
 
     //calculate a new PCA transformation
@@ -146,7 +153,7 @@ cv::Mat RegressionModel::runPCA(cv::Mat data)
 
 cv::Mat RegressionModel::stripFirstCol(cv::Mat data)
 {
-    std::cout << "stripping column\n";
+    //std::cout << "stripping column\n";
 
     //std::cout << "data width: " << data.size().width << "\n";
 
@@ -263,6 +270,7 @@ float RegressionModel::getFinalRegressionLine(int PCAindex)
     x.row(0).at<float>(1) = val;
     switch(mFinalRegressionType)
     {
+    default:
     case PLANAR:
         return 0; //planar stuff...
     case PCA_LINEAR:
