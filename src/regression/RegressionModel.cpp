@@ -11,6 +11,8 @@ RegressionModel::RegressionModel()
     //...not really it just doesn't matter
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     mFinalPCALinear.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
+    mFinalPCAQuad.reset(new QuadraticRegression(-100000, 100000, ModelComponent::BLUE));
+    mFinalPCAExponential.reset(new ExponentialRegression(-100000, 100000, ModelComponent::BLUE));
     //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
     mHasCircle = false;
     mPCAdone = false;
@@ -22,12 +24,24 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
     mWasEvaluation = true;
     mCalibrationToGraph = -1;
     mRawEvaluationData = colors;
+
     runModel(colors);
     cv::Mat weights = getModelWeights();
-    mLastEvaluation = evaluateUnknown(weights);
     cv::Mat weightsPCA = runPCA(weights);
-    std::cout << "PCA Linear evaluation: " << evaluatePCA(weightsPCA);
 
+    RegressionType temp = mFinalRegressionType;
+
+    mFinalRegressionType = PCA_LINEAR;
+    std::cout << "PCA Linear evaluation: " << evaluateUnknown(weightsPCA) << "\n";
+    mFinalRegressionType = PCA_QUADRATIC;
+    std::cout << "PCA Quad evaluation  : " << evaluateUnknown(weightsPCA) << "\n";
+    mFinalRegressionType = PCA_EXPONENTIAL;
+    std::cout << "PCA Exponential eval : " << evaluateUnknown(weightsPCA) << "\n";
+    mFinalRegressionType = PLANAR;
+    std::cout << "Planar evaluation    : " << evaluateUnknown(weights) << "\n";
+
+    mLastEvaluation = temp;
+    mLastEvaluation == PLANAR ? evaluateUnknown(weights) : evaluateUnknown(weightsPCA);
     return mLastEvaluation;
 }
 
@@ -62,8 +76,13 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     if(mPCAdone)
     {
         mPCACalibrationData = runPCA(mCalibrationData);
+
+        std::cout << "calibrating PCA models\n";
         mFinalPCALinear->evaluate(mPCACalibrationData);
-        //mPCALinearWeights = mFinalPCALinear->mWeights;
+        mFinalPCAQuad->evaluate(mPCACalibrationData);
+        std::cout << "moving on to exponential model...\n";
+        mFinalPCAExponential->evaluate(mPCACalibrationData);
+        std::cout << "Done calibrating PCA models\n";
     }
 
     //set the calibration just done as the one to graph
@@ -409,16 +428,23 @@ float RegressionModel::evaluateUnknown(cv::Mat weights)
     //std::cout << mFinalWeights << "\n" << weights << "\n";
     //cv::Mat result = mFinalWeights.t() * weights.t();
     //std::cout << "result: " << mFinalComponent->getEstimation(weights) << "\n";
-    return mFinalComponent->getEstimation(weights);
-}
-
-//private evaluation using PCA
-float RegressionModel::evaluatePCA(cv::Mat weights)
-{
-    //std::cout << mPCALinearWeights << "\n" << weights << "\n";
-    //cv::Mat result = mPCALinearWeights.t() * weights.t();
-    //return result.at<float>(0);
-    return mFinalPCALinear->getEstimation(weights);
+    switch(mFinalRegressionType)
+    {
+    default:
+    case PLANAR:
+        mLastEvaluation = mFinalComponent->getEstimation(weights);
+        break;
+    case PCA_LINEAR:
+        mLastEvaluation = mFinalPCALinear->getEstimation(weights);
+        break;
+    case PCA_QUADRATIC:
+        mLastEvaluation = mFinalPCAQuad->getEstimation(weights);
+        break;
+    case PCA_EXPONENTIAL:
+        mLastEvaluation = mFinalPCAExponential->getEstimation(weights);
+        break;
+    }
+    return mLastEvaluation;
 }
 
 void RegressionModel::runModel(std::vector<cv::SerializableScalar> colors)

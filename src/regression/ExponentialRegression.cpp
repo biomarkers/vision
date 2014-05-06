@@ -7,7 +7,8 @@
 //BOOST_CLASS_EXPORT_IMPLEMENT(ExponentialRegression);
 
 ExponentialRegression::ExponentialRegression(float begin, float end, ModelComponent::VariableType variable) :
-    ModelComponent(begin, end, variable)
+    ModelComponent(begin, end, variable),
+    mLinearComponent(new LinearRegression(begin, end, variable))
 {
     //no construction
 }
@@ -17,11 +18,15 @@ void ExponentialRegression::evaluate(cv::Mat x)
     x = cutToSize(x);
     float sem = getSquaredFromMean(x);
     cv::Mat y;
+
+    std::cout << x << "\n\n";
+
     y = logMat(x, .98);
 
-    ComponentPtr linearModel(new LinearRegression(mBegin, mEnd, mVar));
-    linearModel->evaluate(y);
-    mWeight = linearModel->getWeight();
+    std::cout << y << "\n\n";
+
+    mLinearComponent->evaluate(y);
+    mWeight = mLinearComponent->getWeight();
 
     float se = 0;
     float val;
@@ -31,52 +36,51 @@ void ExponentialRegression::evaluate(cv::Mat x)
         se += pow(val - x.row(c).at<float>(0), 2.f);
     }
     mR2 = (1.f - se/sem);
-
-    mWeights = cv::Mat(2,1,CV_32F,0.f);
-    mWeights.row(0).at<float>(0) = mDisp;
-    mWeights.row(1).at<float>(0) = mWeight;
 }
 
 float ExponentialRegression::getEstimation(cv::Mat x)
 {
     //assuming x will be [1, x]...
-    return exp(mWeight * x.row(0).at<float>(1)) + mDisp;
+    float val = mLinearComponent->getEstimation(x);
+    return exp(val) + mDisp;
 }
 
+
+//not taking noise into account, just find minimum y value and drop all the values by
+// percent of the minimum value
 cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
 {
-    int count = 0, bad_count = 0;
-    float total = 0, avg = 0;
-
+    float minimum = x.col(0).at<float>(0);
     int height = x.size().height;
 
-    int end = height * percent;
-    if(end == height && height > 2)
+    for(int c = 0; c < height; c++)
     {
-        end -= 1;
+        float val = x.col(0).at<float>(c);
+        if(val < minimum)
+            minimum = val;
     }
-    for(int c = height-1; c > end; c--)
-    {
-        count += 1;
-        total += x.col(0).at<float>(c);
-    }
-    avg = total / count;
-    avg -= .05;
 
-    mDisp = avg;
+    if(minimum > 0)
+    {
+        mDisp = minimum * percent;
+    }
+    else
+    {
+        //flip percent over 100% so that we end up shifting
+        //all values to be above zero
+        mDisp = minimum * (2.f - percent);
+    }
 
     cv::Mat out(0,2,CV_32F);
 
     for(int c = 0; c < height; c++)
     {
-        float val = x.col(0).at<float>(c) - avg;
+        float val = x.col(0).at<float>(c) - mDisp;
         if(val > 0)
         {
             x.col(0).at<float>(c) = log(val);
             out.push_back(x.row(c));
         }
-        else
-            bad_count++;
     }
 
     return out;
@@ -97,9 +101,8 @@ float ExponentialRegression::getWeight()
 
 float ExponentialRegression::graphPoint(int second)
 {
-    if(second < mBegin || second > mEnd)
-        return 0;
-    return exp(mWeight * second) + mDisp;
+    float val = mLinearComponent->graphPoint(second);
+    return exp(val) + mDisp;
 }
 
 ModelComponent::ModelType ExponentialRegression::getModelType()

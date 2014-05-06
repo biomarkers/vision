@@ -60,8 +60,6 @@ public:
         INVALID_TYPE
     };
 
-    RegressionType mFinalRegressionType;
-
     //get and set the regression type
     RegressionType getCurrentRegressionType();
     void setRegressionType(RegressionType type);
@@ -145,10 +143,9 @@ private:
     void pushComponent(ComponentPtr ptr);
 
     //private unknown evaluation
+    //runs weights through the regression given by
+    //mFinalRegressionType
     float evaluateUnknown(cv::Mat weights);
-
-    //private unknown evaluation using the PCA analysis
-    float evaluatePCA(cv::Mat weights);
 
     //run the model
     void runModel(std::vector<cv::SerializableScalar> colors);
@@ -185,6 +182,9 @@ private:
     ComponentPtr mFinalPCAQuad;
     //PCA LM fit
     ComponentPtr mFinalPCAExponential;
+
+    //which component will be used for the final regression?
+    RegressionType mFinalRegressionType;
 
     //PCA object for the transformation to PCA space
     cv::PCA mPCA;
@@ -241,7 +241,7 @@ private:
         (void)version;
         ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCALinear
                 & mFinalPCAQuad & mFinalPCAExponential & mCalibrationData & mRawCalibrationData & mWasEvaluation
-                & mCalibrationToGraph & mRawEvaluationData & mModelName
+                & mCalibrationToGraph & mRawEvaluationData & mModelName & mFinalRegressionType
                 & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
         //will restore mPCAdone as well

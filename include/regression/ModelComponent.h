@@ -79,6 +79,7 @@ public:
     friend class RegressionModel;
     //also because lazy...
     friend class QuadraticRegression;
+    friend class ExponentialRegression;
 protected:
     ModelComponent() {}
     //region of frames to analyze between

@@ -16,14 +16,12 @@ void QuadraticRegression::evaluate(cv::Mat x)
     x = cutToSize(x);
     //sqrt values before sending to linear component
     x = squareRoot(x);
-
     mLinearComponent->evaluate(x);
 
     //update r2 and weights from the linear component
     mR2 = mLinearComponent->mR2;
     mWeights = mLinearComponent->mWeights;
 }
-
 
 //assume mats in form [y, x], taking sqrt(y)
 cv::Mat QuadraticRegression::squareRoot(cv::Mat x)

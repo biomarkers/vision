@@ -27,6 +27,7 @@ private:
     float mWeight; //more ezmode weights
     float mDisp;
 
+    ComponentPtr mLinearComponent;
 
     friend class boost::serialization::access;
 
@@ -35,7 +36,7 @@ private:
     {
         (void)version;
         ar & boost::serialization::base_object<ModelComponent>(*this);
-        ar & mWeight & mDisp;
+        ar & mWeight & mDisp & mLinearComponent;
     }
 };
 
