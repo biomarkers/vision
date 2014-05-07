@@ -55,8 +55,6 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     //run the model components over the new color data
     runModel(colors);
 
-    //std::cout << "CALIBRATING: " << mComponents[0]->getWeight() << std::endl;
-
     //grab the weights returned by the components
     cv::Mat weights = getModelWeights();
     //slap in the y value given by the user
@@ -66,15 +64,6 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
 
     //do the planar evaluation with the final component
     mFinalComponent->evaluate(mCalibrationData);
-
-
-
-    //debug stuff...
-    std::cout << "planar regression weight dumps: \n";
-    std::cout << mFinalComponent->mWeights << "\n";
-    std::cout << "ind:\n" << ((LinearRegression*)(ModelComponent*)(mFinalComponent.get()))->dbgi;
-
-    //std::cout << "CALIBRATE THIS: " << mCalibrationData << std::endl;
 
     //calculate a new PCA transformation
     createPCATransform();

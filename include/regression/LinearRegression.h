@@ -20,11 +20,6 @@ public:
     virtual ModelType getModelType();
     virtual std::string getStatString();
 
-    cv::Mat dbgi;
-    cv::Mat dbgi2;
-    cv::Mat dbgi3;
-    cv::Mat dbgdep;
-
 protected:
     virtual float graphPoint(int second);
     friend class boost::serialization::access;

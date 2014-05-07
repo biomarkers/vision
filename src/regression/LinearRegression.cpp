@@ -28,14 +28,12 @@ void LinearRegression::evaluate(cv::Mat x)
         x.col(c).copyTo(independent.col(c));
     }
 
-    //debug crap
-    dbgi = independent;
-    dbgi2 = independent.t() * independent;
-    dbgi3 = dbgi2 * independent.t();
-    dbgdep = dependent;
-    //
-
-    weights = (independent.t() * independent).inv() * independent.t() * dependent;
+    //Use the SVD Decomposition here for matrix inverting
+    //during computation the matrix (independent.t() * independent) becomes very non-normalized
+    //and the default .inv() method will sometimes calculate zero for the determinant, and return all zeroes.
+    //According to the documentation, SVD Decomposition uses a "pseudo inverse" in this case,
+    //which seems to work well for our purposes
+    weights = (independent.t() * independent).inv(cv::DECOMP_SVD) * independent.t() * dependent;
 
     float se = 0;
     float val;
