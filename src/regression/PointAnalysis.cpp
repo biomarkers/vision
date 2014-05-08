@@ -20,8 +20,7 @@ void PointAnalysis::evaluate(cv::Mat x)
     //r2 value will instead be standard dev, sigma
     float sem = getSquaredFromMean(x);
     sem /= height;
-    sem = sqrt(sem);
-    mR2 = (sem);
+    mR2 = sqrt(sem);
 
     mAvg = 0;
     for(int c = 0; c < height; c++)
@@ -49,6 +48,7 @@ std::string PointAnalysis::getStatString()
     data << "channel from " << mBegin << "s to " << mEnd << "s\n";
     data << "y = " << mAvg << "\n";
     data << "Standard Deviation = " << mR2 << "\n";
+    data << "Mean Squared Error = " << mMSE << "\n";
 
     return data.str();
 }

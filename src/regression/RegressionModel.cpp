@@ -8,22 +8,24 @@ RegressionModel::RegressionModel()
 {
     mWasEvaluation = false;
     //blue because that's just how I'm feelin'
-    //...not really it just doesn't matter
+    //...not really it just doesn't matter what channel we specify
     mFinalComponent.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     mFinalPCALinear.reset(new LinearRegression(-100000, 100000, ModelComponent::BLUE));
     mFinalPCAQuad.reset(new QuadraticRegression(-100000, 100000, ModelComponent::BLUE));
     mFinalPCAExponential.reset(new ExponentialRegression(-100000, 100000, ModelComponent::BLUE));
-    //mFinalComponent = new ExponentialRegression(-10000, 10000, ModelComponent::BLUE);
     mHasCircle = false;
     mPCAdone = false;
+    mRegressionGraph = PLANAR;
+    mFinalRegressionType = PLANAR;
 }
 
 //evaluate a test sample, return the estimation
-float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
+float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors, cv::Scalar sdev)
 {
     mWasEvaluation = true;
     mCalibrationToGraph = -1;
     mRawEvaluationData = colors;
+    mEvaluationSDev = sdev;
 
     runModel(colors);
     cv::Mat weights = getModelWeights();
@@ -47,11 +49,12 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors)
 
 //add a calibration point to the model
 void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
-               float calibrationValue)
+               float calibrationValue, cv::Scalar sdev)
 {
     mWasEvaluation = false;
     //push back the color data to be stored in the database
     mRawCalibrationData.push_back(colors);
+    mCalibrationSDev.push_back(sdev);
     //run the model components over the new color data
     runModel(colors);
 
@@ -159,13 +162,12 @@ cv::Mat RegressionModel::stripFirstCol(cv::Mat data)
     return dataMinusYVals;
 }
 
-void RegressionModel::setIndices(int time, int red, int green, int blue, int hue)
+void RegressionModel::setIndices(int time, int red, int green, int blue)
 {
     mTime = time;
     mRed = red;
     mGreen = green;
     mBlue = blue;
-    mHue = hue;
 }
 
 //number of calibration runs stored
@@ -257,11 +259,11 @@ float RegressionModel::getFinalRegressionLine(int PCAindex)
     cv::Mat x(1,2,CV_32F,1.f);
     float val = static_cast<int>(PCAindex);
     x.row(0).at<float>(1) = val;
-    switch(mFinalRegressionType)
+    switch(mRegressionGraph)
     {
     default:
     case PLANAR:
-        return 0; //planar stuff...
+        return FinalComponentPCAGraph(PCAindex);
     case PCA_LINEAR:
         return mFinalPCALinear->getEstimation(x);
     case PCA_QUADRATIC:
@@ -269,6 +271,40 @@ float RegressionModel::getFinalRegressionLine(int PCAindex)
     case PCA_EXPONENTIAL:
         return mFinalPCAExponential->getEstimation(x);
     }
+}
+
+float RegressionModel::FinalComponentPCAGraph(int PCAindex)
+{
+    //grab the two calibration points that are on either side of the given index,
+    //then get y values for those from the planar model, and interpolate linearly
+
+    float leftx = 0, lefty = 0, rightx = 0, righty = 0;
+    float distr = 100000000, distl = 100000000;
+
+    for(int c = 0; c < mCalibrationData.size().height; c++)
+    {
+        float x = mPCACalibrationData.row(c).at<float>(1);
+        cv::Mat xr = mCalibrationData.row(c);
+        xr.row(0).at<float>(0) = 1.f;
+        if(x < PCAindex && PCAindex-x < distl)
+        {
+            float y = mFinalComponent->getEstimation(xr);
+            leftx = x;
+            lefty = y;
+            distl = PCAindex - x;
+        }
+        if(x > PCAindex && x-PCAindex < distr)
+        {
+            float y = mFinalComponent->getEstimation(xr);
+            rightx = x;
+            righty = y;
+            distr = x - PCAindex;
+        }
+    }
+
+    float slope = (righty - lefty) / (rightx - leftx);
+    float val = slope * (PCAindex - leftx) + lefty;
+    return val;
 }
 
 //binary search for value near index on given column of matrix
@@ -305,6 +341,7 @@ float RegressionModel::getCalibrationConcentration(int run)
 //set the statistical data and graph output to a certain calibration run
 void RegressionModel::setStatsForCalibration(int run)
 {
+    mWasEvaluation = false;
     if(run < mRawCalibrationData.size())
     {
         runModel(mRawCalibrationData[run]);
@@ -338,6 +375,37 @@ std::string RegressionModel::getStatData()
     {
         data.append(mComponents[c]->getStatString());
     }
+
+    std::stringstream stream;
+    if(mWasEvaluation)
+    {
+        stream << "Red channel standard deviation  : " << mEvaluationSDev(mRed) << "\n";
+        stream << "Green channel standard deviation: " << mEvaluationSDev(mGreen) << "\n";
+        stream << "Blue channel standard deviation : " << mEvaluationSDev(mBlue) << "\n";
+    }
+    else
+    {
+        stream << "Red channel standard deviation  : " << mCalibrationSDev[mCalibrationToGraph](mRed) << "\n";
+        stream << "Green channel standard deviation: " << mCalibrationSDev[mCalibrationToGraph](mGreen) << "\n";
+        stream << "Blue channel standard deviation : " << mCalibrationSDev[mCalibrationToGraph](mBlue) << "\n";
+    }
+    data.append(stream.str());
+    return data;
+}
+
+std::string RegressionModel::getFinalCalStatData()
+{
+    std::string data;
+
+    data.append("Planar regression method:\n");
+    data.append(mFinalComponent->getStatString());
+    data.append("\n\nLinear regression in PCA:\n");
+    data.append(mFinalPCALinear->getStatString());
+    data.append("\n\nQuadratic regression in PCA:\n");
+    data.append(mFinalPCAQuad->getStatString());
+    data.append("\n\nExponential regression in PCA:\n");
+    data.append(mFinalPCAExponential->getStatString());
+
     return data;
 }
 
@@ -468,11 +536,6 @@ void RegressionModel::runModel(std::vector<cv::SerializableScalar> colors)
             row.at<float>(0) = val(mRed);
             red.push_back(row);
         }
-        if(mHue >= 0)
-        {
-            row.at<float>(0) = val(mHue);
-            hue.push_back(row);
-        }
     }
 
     for(int c = 0; c < mComponents.size(); c++)
@@ -504,15 +567,22 @@ cv::Mat RegressionModel::getModelWeights()
 void RegressionModel::chuckCalibration(int run)
 {
     cv::Mat temp(0, mCalibrationData.size().width, CV_32F);
+    cv::Mat temp2(0, mPCACalibrationData.size().width, CV_32F);
     for(int c = 0; c < mCalibrationData.size().height; c++)
     {
         if(c != run)
+        {
             temp.push_back(mCalibrationData.row(c));
+            temp2.push_back(mPCACalibrationData.row(c));
+        }
     }
     mCalibrationData = temp;
+    mPCACalibrationData = temp2;
+
     mRawCalibrationData.erase(mRawCalibrationData.begin() + run);
     if(mCalibrationData.size().height > 0)
         dryCalibrate();
+    mCalibrationSDev.erase(mCalibrationSDev.begin() + run);
 }
 
 

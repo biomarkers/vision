@@ -30,33 +30,52 @@ class RegressionModel{
 public:
     friend class RegressionFactory;
 
+    /*
+     *  These are the main three interface functions for a Regression Model,
+     *  the evaluation of an unknown or the addition of a calibration point.
+     *  Additionally, setIndices() is used to tell the model what order the
+     *  red, green, blue, and time values will be in for the inputs to
+     *  evaluate() and calibrate()
+     */
+
     //evaluate a test sample, return the estimation
-    float evaluate(std::vector<cv::SerializableScalar> colors);
+    float evaluate(std::vector<cv::SerializableScalar> colors, cv::Scalar sdev = (0,0,0,0));
 
     //add a calibration point to the model
     void calibrate(std::vector<cv::SerializableScalar> colors,
-                   float calibrationValue);
+                   float calibrationValue, cv::Scalar sdev = (0,0,0,0));
 
-    //re-run the calibration without any new data
-    void dryCalibrate();
+    //announce the indices of incoming matrices. Use -1 for not present
+    void setIndices(int time, int red, int green, int blue);
+
+    /*
+     *  These next two functions are for manually putting calibration data
+     *  into the model. This is mostly for testing purposes, and wouldn't
+     *  normally be used.
+     *  Usage: stick custom calibration data in with superSecretCalibrationOverride(),
+     *  then call dryCalibrate() to apply this new data to the model
+     */
 
     //super secret function, don't touch!
     void superSecretCalibrationOverride(cv::Mat newCalibration);
 
-    //announce the indices of incoming matrices. Use -1 for not present
-    void setIndices(int time, int red, int green, int blue, int hue);
+    //re-run the calibration without any new data
+    void dryCalibrate();
 
-    //number of calibration runs stored
-    int getNumCalibrations();
-
-    //grab the last frame we need to look at
-    int getModelRunTime();
+    /*
+     *  The RegressionModel is two-layered, a first pass over the RGB data yields weights
+     *  from the results of regressions over the color channels (Described by the ModelComponents
+     *  added to the RegressionModel in the RegressionFactory). Weights from many of these
+     *  first passes are then run through four second pass regression models, listed here in
+     *  the enum RegressionType. The regression type set for the model will be the one used to
+     *  calculate the value returned by a call to evaluate().
+     */
 
     enum RegressionType{
-        PLANAR = 0,
-        PCA_LINEAR,
-        PCA_QUADRATIC,
-        PCA_EXPONENTIAL,
+        PLANAR = 0,         //n-dimensional planar regression
+        PCA_LINEAR,         //linear regression over the data in PCA(1) space
+        PCA_QUADRATIC,      //quadratic regression over the data in PCA(1) space
+        PCA_EXPONENTIAL,    //exponential regression over the data in PCA(1) space
         INVALID_TYPE
     };
 
@@ -65,25 +84,46 @@ public:
     void setRegressionType(RegressionType type);
 
     /*
-        Grab lines for the graphs of each calibration/evaluation run. These functions operate
-        on either the calibration given in mCalibrationToGraph, or the last evaluation run
-    */
+     *  This next section covers grabbing data for graphical output
+     */
 
-    //data grabbing functions to get the raw rgb data from the last run (calibration or evaluation)
+    /*
+     *  Grab lines for the RGB graphs of each calibration/evaluation run. These functions will return
+     *  data from either the calibration run set in setStatsForCalibration(), or from the call to
+     *  evaluate(), whichever happened most recently
+     */
+
+    //grab the last frame we need to look at. Useful for both setting the upper bound for the range
+    //of a graph, and also for reporting to a camera controller how long to watch the test runs for
+    int getModelRunTime();
+
+    //RGB data returned indexed by second (if actual data has subsecond accuracy,
+    //not all data will be returned)
     float getRed(int second);
     float getGreen(int second);
     float getBlue(int second);
-    //get a point to graph for the last regression run on the given component,
+
+    //get a point to graph for the regression result of the given component
     float getRegressionPoint(int component, int second);
 
+    //get currently graphed calibration run
+    int getGraphedCalibration();
+
+    //get string with statistical data about the test run
+    std::string getStatData();
+
+    //set the statistical data and graph output to a certain calibration run
+    void setStatsForCalibration(int run);
+
     /*
-        Grab points for final regression graphs. These are all done in PCA space.
-        Possible graphs are:
-            Planar regression
-            PCA Linear regression
-            PCA Exponential regression
-            PCA Quadratic regression
-    */
+     *  Grab points for final regression graphs. These are all done in PCA space.
+     *  Possible graphs are:
+     *      Planar regression
+     *      PCA Linear regression
+     *      PCA Exponential regression
+     *      PCA Quadratic regression
+     *  The graph output will be set by setRegressionGraphType()
+     */
 
     //get the x range of the PCA space
     void getPCASpaceRange(float &left, float &right);
@@ -92,15 +132,32 @@ public:
     //get a point to graph for the regression type mFinalRegressionType in PCA space
     float getFinalRegressionLine(int PCAindex);
 
+    //get statistical output for the final regression models
+    std::string getFinalCalStatData();
 
-    //get currently graphed calibration run
-    int getGraphedCalibration();
+    //set regression type for graph output
+    void setRegressionGraphType(RegressionType type);
 
     //get the calibration value used for a calibration run (eg mgdL)
     float getCalibrationConcentration(int run);
 
-    //set the statistical data and graph output to a certain calibration run
-    void setStatsForCalibration(int run);
+
+    /*
+     *  The model stores a circular area of interest to look at in a video.
+     *  This isn't data used by the model, but rather stored along with the model
+     *  to be reported back to a camera controller, so that the same pixels are
+     *  watched for each test run
+     */
+
+    //set the circle center and size
+    void setCircle(float centerx, float centery, float radius);
+
+    //get the circle center and size
+    float getCircleCenterX();
+    float getCircleCenterY();
+    float getCircleRadius();
+
+    /* Finally the rest of random necessary things to interface with */
 
     //matrix of raw model output from calibrations
     cv::Mat getRawCalData();
@@ -111,22 +168,14 @@ public:
     //name of substance being tested
     std::string getTestName();
 
-    //get string with statistical data about last test run
-    std::string getStatData();
-
-    //throw away a calibration run
+    //delete an unwanted calibration run
     void chuckCalibration(int run);
 
     //have at least two calibration runs been done?
     bool isCalibrated();
 
-    //set the circle center and size
-    void setCircle(float centerx, float centery, float radius);
-
-    //get the circle center and size
-    float getCircleCenterX();
-    float getCircleCenterY();
-    float getCircleRadius();
+    //number of calibration runs stored
+    int getNumCalibrations();
 
     //query the important UI things about each model component
     int queryNumComponents();
@@ -165,15 +214,18 @@ private:
     //strip the first column off a matrix
     cv::Mat stripFirstCol(cv::Mat data);
 
+    //graph of planar regression in PCA space
+    float FinalComponentPCAGraph(int PCAindex);
+
     //positions of variables in input matrices
-    int mRed, mGreen, mBlue, mHue, mTime;
+    int mRed, mGreen, mBlue, mTime;
 
     //list of the components that make up the model
     std::vector<ComponentPtr> mComponents;
 
     /*
-        Regression Components for the final model
-    */
+     *  Regression Components for the final model
+     */
     //n-planar regression
     ComponentPtr mFinalComponent;
     //PCA linear fit
@@ -185,6 +237,9 @@ private:
 
     //which component will be used for the final regression?
     RegressionType mFinalRegressionType;
+
+    //which regression type will we be graphing?
+    RegressionType mRegressionGraph;
 
     //PCA object for the transformation to PCA space
     cv::PCA mPCA;
@@ -199,8 +254,14 @@ private:
     //rows of [y, x]
     cv::SerializableMat mPCACalibrationData;
 
+
+    //!!!!!!!! note laziness because the expo is near, don't remove/add elements in
+    //one of these vectors without modifying the other one too :D
+
     //raw color data of calibration tests, so shit can be graphed later on yo
     std::vector<std::vector<cv::SerializableScalar> > mRawCalibrationData;
+    //standard deviation value of RGB channels in calibration runs
+    std::vector<cv::SerializableScalar> mCalibrationSDev;
 
     //was the last run a calibration or an evaluation?
     bool mWasEvaluation;
@@ -209,6 +270,8 @@ private:
 
     //raw rgb data for last evaluation
     std::vector<cv::SerializableScalar> mRawEvaluationData;
+    //standard deviation for rgb channels of last evaluation
+    cv::SerializableScalar mEvaluationSDev;
 
     //name of the model, eg. "Chad's Baller Glucose Model"
     std::string mModelName;
@@ -237,14 +300,15 @@ private:
     template<typename Archive>
     void serialize(Archive& ar, const unsigned version)
     {
-        std::cout << "archiving!\n\n";
         (void)version;
-        ar & mRed & mGreen & mBlue & mHue & mTime & mComponents & mFinalComponent & mFinalPCALinear
+        //archive all the member variables
+        //everything is serializable with boost archives
+        ar & mRed & mGreen & mBlue & mTime & mComponents & mFinalComponent & mFinalPCALinear
                 & mFinalPCAQuad & mFinalPCAExponential & mCalibrationData & mRawCalibrationData & mWasEvaluation
-                & mCalibrationToGraph & mRawEvaluationData & mModelName & mFinalRegressionType
+                & mCalibrationToGraph & mRawEvaluationData & mModelName & mFinalRegressionType & mRegressionGraph
                 & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
-        //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here
-        //will restore mPCAdone as well
+        //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here.
+        //This will restore mPCAdone as well.
         createPCATransform();
     }
 

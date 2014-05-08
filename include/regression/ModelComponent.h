@@ -92,6 +92,9 @@ protected:
     //r^2 values
     float mR2;
 
+    //mean squared error
+    float mMSE;
+
     //variable to be tested
     VariableType mVar;
 

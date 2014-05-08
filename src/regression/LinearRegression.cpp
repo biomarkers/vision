@@ -34,20 +34,17 @@ void LinearRegression::evaluate(cv::Mat x)
     //According to the documentation, SVD Decomposition uses a "pseudo inverse" in this case,
     //which seems to work well for our purposes
     weights = (independent.t() * independent).inv(cv::DECOMP_SVD) * independent.t() * dependent;
+    mWeights = weights;
 
     float se = 0;
     float val;
     for(int c = 0; c < x.size().height; c++)
     {
-        cv::Mat jj = weights.t() * independent.row(c).t();
-        //if(c < 11)
-            //std::cout << jj << "\n";
-        val = jj.at<float>(0);
+        val = getEstimation(independent.row(c));
         se += pow(val - dependent.row(c).at<float>(0), 2.f);
     }
     mR2 = (1-se/sem);
-
-    mWeights = weights;
+    mMSE = se / ((float)x.size().height);
 }
 
 float LinearRegression::getEstimation(cv::Mat x)
@@ -58,7 +55,7 @@ float LinearRegression::getEstimation(cv::Mat x)
 float LinearRegression::getWeight()
 {
     if(mWeights.size().height > 0)
-        return mWeights.row(0).at<float>(1);
+        return mWeights.row(1).at<float>(0);
     else
         return 0; //should throw some error here, get around to that later
 }
@@ -69,8 +66,14 @@ std::string LinearRegression::getStatString()
     data << "Linear Regression Component\n";
     insertVar(&data);
     data << "channel from " << mBegin << "s to " << mEnd << "s\n";
-    data << "y = " << mWeights.row(0).at<float>(1) << "t + " << mWeights.row(0).at<float>(0) << "\n";
+    data << "y = ";
+
+    for(int c = 1; c < mWeights.size().height; c++)
+        data << mWeights.row(c).at<float>(0) << "t" << c << " + ";
+
+    data << mWeights.row(0).at<float>(0) << "\n";
     data << "R^2 = " << mR2 << "\n";
+    data << "MSE = " << mMSE << "\n";
 
     return data.str();
 }

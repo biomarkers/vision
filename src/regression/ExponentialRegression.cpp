@@ -16,7 +16,7 @@ ExponentialRegression::ExponentialRegression(float begin, float end, ModelCompon
 void ExponentialRegression::evaluate(cv::Mat x)
 {
     x = cutToSize(x);
-    float sem = getSquaredFromMean(x);
+    //float sem = getSquaredFromMean(x);
     cv::Mat y;
 
     //for now dont use a displacement to account for y=ln(x)+c,
@@ -31,10 +31,13 @@ void ExponentialRegression::evaluate(cv::Mat x)
     float val;
     for(int c = 0; c < x.size().height; c++)
     {
-        val = exp(mWeight * x.row(c).at<float>(1)) + mDisp;
+        cv::Mat xr(1,2,CV_32F,1.f);
+        xr.row(0).at<float>(1) = x.row(c).at<float>(1);
+        val = getEstimation(xr);
         se += pow(val - x.row(c).at<float>(0), 2.f);
     }
-    mR2 = (1.f - se/sem);
+    mMSE = se / ((float)x.size().height);
+    mR2 = mLinearComponent->mR2;
 }
 
 float ExponentialRegression::getEstimation(cv::Mat x)
@@ -77,8 +80,8 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
         float val = x.col(0).at<float>(c) - mDisp;
         if(val > 0)
         {
-            x.col(0).at<float>(c) = log(val);
             out.push_back(x.row(c));
+            out.col(0).at<float>(c) = log(val);
         }
     }
 
@@ -94,7 +97,8 @@ std::string ExponentialRegression::getStatString()
     data << "channel from " << mBegin << "s to " << mEnd << "s\n";
     data << "y = exp(" << mLinearComponent->mWeights.row(0).at<float>(1) << "t + " << mLinearComponent->mWeights.row(0).at<float>(0)
          << ") + " << mDisp << "\n";
-    data << "R^2 = " << mR2 << "\n";
+    data << "R^2 (linear) = " << mR2 << "\n";
+    data << "MSE          = " << mMSE << "\n";
     return data.str();
 }
 

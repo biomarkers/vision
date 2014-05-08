@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 
     model = factory.getCreatedModel();
 
-    model->setIndices(3,2,1,0,-1);
+    model->setIndices(3,2,1,0);
 
     std::vector<cv::SerializableScalar> colors;
     std::vector<cv::SerializableScalar> colors1;
@@ -179,6 +179,7 @@ int main(int argc, char** argv)
     //exp.exportDiagnosticRun();
     //std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
 
-    std::cout << "\n\n\n\n\n" << model->getRawCalData() << "\n\n";
+    std::cout << "\n\n\n" << model->getRawCalData() << "\n\n";
+    std::cout << model->getFinalCalStatData() << "\n";
 
 }

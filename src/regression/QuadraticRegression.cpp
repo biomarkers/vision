@@ -18,9 +18,20 @@ void QuadraticRegression::evaluate(cv::Mat x)
     x = squareRoot(x);
     mLinearComponent->evaluate(x);
 
+    float se = 0;
+    float val;
+    for(int c = 0; c < x.size().height; c++)
+    {
+        cv::Mat xr(1,2,CV_32F,1.f);
+        xr.row(0).at<float>(1) = x.row(c).at<float>(1);
+        val = getEstimation(xr);
+        se += pow(val - x.row(c).at<float>(0), 2.f);
+    }
+    mMSE = se / ((float)x.size().height);
+
     //update r2 and weights from the linear component
     mR2 = mLinearComponent->mR2;
-    mWeights = mLinearComponent->mWeights;
+    mWeights = mLinearComponent->mWeights; //mWeights not really used for anything though....
 }
 
 //assume mats in form [y, x], taking sqrt(y)
@@ -53,7 +64,8 @@ std::string QuadraticRegression::getStatString()
     insertVar(&data);
     data << "channel from " << mBegin << "s to " << mEnd << "s\n";
     data << "y = (" << mWeights.row(0).at<float>(1) << "t + " << mWeights.row(0).at<float>(0) << ")^2 \n";
-    data << "R^2 = " << mR2 << "\n";
+    data << "R^2 (linear) = " << mR2 << "\n";
+    data << "MSE          = " << mMSE << "\n";
 
     return data.str();
 }

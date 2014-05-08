@@ -2,10 +2,7 @@
 
 
 DataExporter::DataExporter(ModelPtr model):
-    //mPath(path),
-    mModel(model)//,
-    //mCSVFileCurrent(false),
-    //mTextFileCurrent(false)
+    mModel(model)
 {
 }
 
@@ -44,18 +41,6 @@ void DataExporter::exportDiagnosticRun()
     appendtoText(stream.str());
 }
 
-/*
-std::string DataExporter::getCSVFilename()
-{
-    return createCSVFile();
-}
-
-std::string DataExporter::getTextFilename()
-{
-    return createTextFile();
-}
-*/
-
 std::string DataExporter::getCSVData()
 {
     return mCSVData;
@@ -66,36 +51,15 @@ std::string DataExporter::getTextData()
     return mTextData;
 }
 
-/*
-std::string DataExporter::createCSVFile()
-{
-    if(!mCSVFileCurrent)
-    {
-
-    }
-    mCSVFileCurrent = true;
-}
-
-std::string DataExporter::createTextFile()
-{
-    if(!mTextFileCurrent)
-    {
-
-    }
-    mTextFileCurrent = true;
-}
-*/
-
 void DataExporter::createCSVData()
 {
     mCSVData.clear();
     std::ostringstream stream;
     stream << "Run #, calibration value, ";
-    int red, green, blue, hue, time;
+    int red, green, blue, time;
     red = mModel->mRed;
     green = mModel->mGreen;
     blue = mModel->mBlue;
-    hue = mModel->mHue;
     time = mModel->mTime;
 
     for(int c = 0; c < 4; c++)
@@ -106,8 +70,6 @@ void DataExporter::createCSVData()
             stream << "Green";
         else if(blue == c)
             stream << "Blue";
-        else if(hue == c)
-            stream << "Hue";
         else if(time == c)
             stream << "Time";
         else

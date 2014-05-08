@@ -17,17 +17,26 @@ class access;
 
 namespace cv{
 
+    // extension of a cv::Mat that can be serialized into a boost archive
     class SerializableMat : public cv::Mat
     {
     public:
+        //default constructor, simply calls default cv::Mat constructor
         SerializableMat();
+
+        //constructor taking a cv::Mat so we can have an implicit conversion
+        //from cv::Mat -> cv::SerializableMat. Allows us to send cv::Mats
+        //into template functions of type cv::SerializableMat.
+        //Calls putMatrix to fill in the data.
         SerializableMat(cv::Mat mat);
 
+        //copies the data from a given cv::Mat into this object
         void putMatrix(cv::Mat mat);
 
         friend class boost::serialization::access;
 
     private:
+        //underlying representation for boost-friendly serialization
         std::vector< std::vector< float> > mMat;
 
         template<typename Archive>
@@ -35,24 +44,30 @@ namespace cv{
         {
             (void)version;
 
-            //std::cout << "Serializing matrix\n";
+            //serialization code, packs contents of this object into the
+            //vector-of-vectors, mMat
 
-            std::vector<float> rowz;
+            std::vector<float> blankRow;
             int height, width;
             height = size().height;
             width = size().width;
             for(int c = 0; c < height; c++)
             {
-                mMat.push_back(rowz);
+                //push a blank row...
+                mMat.push_back(blankRow);
                 for(int i = 0; i < width; i++)
                 {
+                    //...then push in each column's values
                     mMat[c].push_back(row(c).at<float>(i));
                 }
             }
 
-            //std::cout << "now sticking serialized matrix into archive\n";
-
+            //push/pull data to/from archive
             ar & mMat;
+
+
+            //deserialization code, unpacks contents of the vector-of-vectors
+            //into this object
 
             height = mMat.size();
             width = 0;
@@ -61,15 +76,21 @@ namespace cv{
 
             cv::Mat rowMat(1, width, CV_32F);
 
+            //make sure we're starting with a blank matrix
             release();
             for(int c = 0; c < height; c++)
             {
+                //then push back a blank row...
                 push_back(rowMat);
                 for(int i = 0; i < width; i++)
                 {
+                    //...and fill in each column's value
                     row(c).at<float>(i) = mMat[c][i];
                 }
             }
+
+            //release the contents of our vector-of-vectors so that we don't
+            //double the memory footprint of every cv::Mat
             mMat.clear();
         }
     };
