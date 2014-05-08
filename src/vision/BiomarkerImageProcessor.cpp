@@ -7,8 +7,6 @@
 
 #include "vision/CircularSampleAreaDetector.h"
 
-#define DEBUG_MODE
-
 /* Predefined circle locations to use when circle detection is disabled.
  */
 #define DEFAULT_CIRCLE_CENTER_X      317.5
