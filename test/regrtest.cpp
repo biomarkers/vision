@@ -76,8 +76,9 @@ int main(int argc, char** argv)
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::GREEN);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::BLUE);
 
+    factory.addNewComponent(ModelComponent::LINEAR, 10, 30, ModelComponent::BLUE);
 
-    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
+    //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::GREEN);
 

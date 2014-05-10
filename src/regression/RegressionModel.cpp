@@ -254,6 +254,11 @@ void RegressionModel::getCalibrationPointPostPCA(int index, float &xval, float &
     yval = mPCACalibrationData.row(index).at<float>(0);
 }
 
+void RegressionModel::setRegressionGraphType(RegressionType type)
+{
+    mRegressionGraph = type;
+}
+
 float RegressionModel::getFinalRegressionLine(int PCAindex)
 {
     cv::Mat x(1,2,CV_32F,1.f);
