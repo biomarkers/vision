@@ -71,13 +71,17 @@ int main(int argc, char** argv)
     //sample model ideas
     //factory.addNewComponent(ModelComponent::LINEAR, 0, 1000, ModelComponent::GREEN);
 
-    factory.addNewComponent(ModelComponent::LINEAR, 0, 9789/30.f, ModelComponent::RED);
-    //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
+
+    //factory.addNewComponent(ModelComponent::LINEAR, 0, 9789/30.f, ModelComponent::RED);
+    //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::GREEN);
+    //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::BLUE);
+
+
+    factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::GREEN);
 
-    factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::GREEN);
-    factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::BLUE);
+
 
     //factory.addNewComponent(ModelComponent::POINT, 0, 9790, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 9790, ModelComponent::BLUE);
@@ -114,8 +118,8 @@ int main(int argc, char** argv)
     float laterresult = model->evaluate(colors4);
     model->calibrate(colors4, 400);
 
-    //DataExporter exp(model);
-    //exp.exportCalibration();
+    DataExporter exp(model);
+    exp.exportCalibration();
     //std::cout << exp.getCSVData();
     //std::cout << exp.getTextData();
 
@@ -180,6 +184,8 @@ int main(int argc, char** argv)
     //std::cout << "\n\n\n\n" << exp.getCSVData() << exp.getTextData() << "\n\n";
 
     std::cout << "\n\n\n" << model->getRawCalData() << "\n\n";
-    std::cout << model->getFinalCalStatData() << "\n";
+    //std::cout << model->getFinalCalStatData() << "\n";
+
+    std::cout << exp.getTextData() << "\n";
 
 }

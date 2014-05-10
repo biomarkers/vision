@@ -25,6 +25,15 @@ void DataExporter::exportCalibration()
         appendtoText(stream.str());
         appendtoText(mModel->getStatData());
     }
+
+    appendtoText("\n\nModel data: \n");
+    appendtoText(mModel->getFinalCalStatData());
+    appendtoText("\n\nFirst layer regression weights, in form [y, x1, x2...]\n\n");
+
+    std::ostringstream stream;
+    stream << mModel->mCalibrationData << "\n\n" << mModel->mPCACalibrationData;
+
+    appendtoText(stream.str());
 }
 
 void DataExporter::exportDiagnosticRun()
