@@ -284,8 +284,11 @@ float RegressionModel::FinalComponentPCAGraph(int PCAindex)
     for(int c = 0; c < mCalibrationData.size().height; c++)
     {
         float x = mPCACalibrationData.row(c).at<float>(1);
-        cv::Mat xr = mCalibrationData.row(c);
+
+        cv::Mat xr(1,mCalibrationData.size().width,CV_32F,1.f);
+        mCalibrationData.row(c).copyTo(xr.row(0));
         xr.row(0).at<float>(0) = 1.f;
+
         if(x < PCAindex && PCAindex-x < distl)
         {
             float y = mFinalComponent->getEstimation(xr);
