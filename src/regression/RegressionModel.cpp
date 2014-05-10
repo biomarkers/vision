@@ -76,12 +76,12 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     {
         mPCACalibrationData = runPCA(mCalibrationData);
 
-        std::cout << "calibrating PCA models\n";
+        //std::cout << "calibrating PCA models\n";
         mFinalPCALinear->evaluate(mPCACalibrationData);
         mFinalPCAQuad->evaluate(mPCACalibrationData);
-        std::cout << "moving on to exponential model...\n";
+        //std::cout << "moving on to exponential model...\n";
         mFinalPCAExponential->evaluate(mPCACalibrationData);
-        std::cout << "Done calibrating PCA models\n";
+        //std::cout << "Done calibrating PCA models\n";
     }
 
     //set the calibration just done as the one to graph
@@ -114,7 +114,10 @@ void RegressionModel::createPCATransform()
         //std::cout << "actually doing PCA fn\n";
 
         mPCA = cv::PCA(dataMinusYVals, cv::Mat(), CV_PCA_DATA_AS_ROW, 1);
+
         mPCAdone = true;
+
+        mPCACalibrationData = runPCA(mCalibrationData);
     }
 }
 
@@ -331,7 +334,7 @@ float RegressionModel::getDataPoint(int index, int column, std::vector<cv::Seria
         if(a == in || b == in)
             break;
     }
-    std::cout << (*pvec)[in][mTime] << " " << abs(index - (*pvec)[in][mTime]) << " ";
+    //std::cout << (*pvec)[in][mTime] << " " << abs(index - (*pvec)[in][mTime]) << " ";
     return (*pvec)[in][column];
 }
 

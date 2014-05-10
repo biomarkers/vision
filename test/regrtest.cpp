@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 
     for(float c = left; c < right; c += (right-left)/100)
     {
-        std::cout << c << " " << model->getFinalRegressionLine(c) << "\n";
+        //std::cout << c << " " << model->getFinalRegressionLine(c) << "\n";
     }
 
 

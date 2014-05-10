@@ -306,9 +306,10 @@ private:
         ar & mRed & mGreen & mBlue & mTime & mComponents & mFinalComponent & mFinalPCALinear
                 & mFinalPCAQuad & mFinalPCAExponential & mCalibrationData & mRawCalibrationData & mWasEvaluation
                 & mCalibrationToGraph & mRawEvaluationData & mModelName & mFinalRegressionType & mRegressionGraph
-                & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
+                & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation
+                & mEvaluationSDev & mCalibrationSDev & mPCACalibrationData;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here.
-        //This will restore mPCAdone as well.
+        //This will restore mPCAdone, as well as recreating the PCA calibration data
         createPCATransform();
     }
 
