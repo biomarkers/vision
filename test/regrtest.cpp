@@ -77,6 +77,7 @@ int main(int argc, char** argv)
     //factory.addNewComponent(ModelComponent::EXPONENTIAL, 0, 80, ModelComponent::BLUE);
 
     factory.addNewComponent(ModelComponent::LINEAR, 10, 30, ModelComponent::BLUE);
+    factory.addNewComponent(ModelComponent::LINEAR, 10, 30, ModelComponent::GREEN);
 
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::RED);
     //factory.addNewComponent(ModelComponent::POINT, 8500/30.f, 9790/30.f, ModelComponent::BLUE);
@@ -193,5 +194,16 @@ int main(int argc, char** argv)
     //std::cout << model->getFinalCalStatData() << "\n";
 
     std::cout << exp.getTextData() << "\n";
+
+    model->setRegressionGraphType(RegressionModel::PCA_EXPONENTIAL);
+    float left, right;
+    model->getPCASpaceRange(left, right);
+
+
+    for(float c = left; c < right; c += (right-left)/100)
+    {
+        std::cout << c << " " << model->getFinalRegressionLine(c) << "\n";
+    }
+
 
 }

@@ -130,7 +130,7 @@ public:
     //here are the points for the calibration values that we're performing regression on
     void getCalibrationPointPostPCA(int index, float &xval, float &yval);
     //get a point to graph for the regression type mFinalRegressionType in PCA space
-    float getFinalRegressionLine(int PCAindex);
+    float getFinalRegressionLine(float PCAindex);
 
     //get statistical output for the final regression models
     std::string getFinalCalStatData();

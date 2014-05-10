@@ -259,10 +259,10 @@ void RegressionModel::setRegressionGraphType(RegressionType type)
     mRegressionGraph = type;
 }
 
-float RegressionModel::getFinalRegressionLine(int PCAindex)
+float RegressionModel::getFinalRegressionLine(float PCAindex)
 {
     cv::Mat x(1,2,CV_32F,1.f);
-    float val = static_cast<int>(PCAindex);
+    float val = PCAindex;
     x.row(0).at<float>(1) = val;
     switch(mRegressionGraph)
     {
