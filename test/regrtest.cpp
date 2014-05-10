@@ -145,6 +145,11 @@ int main(int argc, char** argv)
     std::cout << "\n---------------------\n  70 Result: " << result << "\n" << model->getStatData()
               << "\n---------------------\n";
 
+    //model->setRegressionType(RegressionModel::PCA_EXPONENTIAL);
+    //result = model->evaluate(colors5);
+    //std::cout << "\n---------------------\n  70 Result: " << result << "\n" << model->getStatData()
+    //          << "\n---------------------\n";
+
     cv::Mat shit = model->getRawCalData();
     std::cout << shit << "\n\n";
 

@@ -42,8 +42,8 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors, cv::
     mFinalRegressionType = PLANAR;
     std::cout << "Planar evaluation    : " << evaluateUnknown(weights) << "\n";
 
-    mLastEvaluation = temp;
-    mLastEvaluation == PLANAR ? evaluateUnknown(weights) : evaluateUnknown(weightsPCA);
+    mFinalRegressionType = temp;
+    mFinalRegressionType == PLANAR ? evaluateUnknown(weights) : evaluateUnknown(weightsPCA);
     return mLastEvaluation;
 }
 
