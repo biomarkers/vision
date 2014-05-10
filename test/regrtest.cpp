@@ -195,14 +195,14 @@ int main(int argc, char** argv)
 
     std::cout << exp.getTextData() << "\n";
 
-    model->setRegressionGraphType(RegressionModel::PCA_EXPONENTIAL);
+    //model->setRegressionGraphType(RegressionModel::PCA_EXPONENTIAL);
     float left, right;
     model->getPCASpaceRange(left, right);
 
 
     for(float c = left; c < right; c += (right-left)/100)
     {
-        //std::cout << c << " " << model->getFinalRegressionLine(c) << "\n";
+        std::cout << c << " " << model->getFinalRegressionLine(c) << "\n";
     }
 
 

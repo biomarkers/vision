@@ -281,7 +281,7 @@ float RegressionModel::getFinalRegressionLine(float PCAindex)
     }
 }
 
-float RegressionModel::FinalComponentPCAGraph(int PCAindex)
+float RegressionModel::FinalComponentPCAGraph(float PCAindex)
 {
     //grab the two calibration points that are on either side of the given index,
     //then get y values for those from the planar model, and interpolate linearly

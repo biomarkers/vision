@@ -215,7 +215,7 @@ private:
     cv::Mat stripFirstCol(cv::Mat data);
 
     //graph of planar regression in PCA space
-    float FinalComponentPCAGraph(int PCAindex);
+    float FinalComponentPCAGraph(float PCAindex);
 
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mTime;
