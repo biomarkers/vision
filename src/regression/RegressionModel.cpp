@@ -42,8 +42,8 @@ float RegressionModel::evaluate(std::vector<cv::SerializableScalar> colors, cv::
     mFinalRegressionType = PLANAR;
     std::cout << "Planar evaluation    : " << evaluateUnknown(weights) << "\n";
 
-    mLastEvaluation = temp;
-    mLastEvaluation == PLANAR ? evaluateUnknown(weights) : evaluateUnknown(weightsPCA);
+    mFinalRegressionType = temp;
+    mFinalRegressionType == PLANAR ? evaluateUnknown(weights) : evaluateUnknown(weightsPCA);
     return mLastEvaluation;
 }
 
@@ -76,12 +76,12 @@ void RegressionModel::calibrate(std::vector<cv::SerializableScalar> colors,
     {
         mPCACalibrationData = runPCA(mCalibrationData);
 
-        std::cout << "calibrating PCA models\n";
+        //std::cout << "calibrating PCA models\n";
         mFinalPCALinear->evaluate(mPCACalibrationData);
         mFinalPCAQuad->evaluate(mPCACalibrationData);
-        std::cout << "moving on to exponential model...\n";
+        //std::cout << "moving on to exponential model...\n";
         mFinalPCAExponential->evaluate(mPCACalibrationData);
-        std::cout << "Done calibrating PCA models\n";
+        //std::cout << "Done calibrating PCA models\n";
     }
 
     //set the calibration just done as the one to graph
@@ -114,7 +114,10 @@ void RegressionModel::createPCATransform()
         //std::cout << "actually doing PCA fn\n";
 
         mPCA = cv::PCA(dataMinusYVals, cv::Mat(), CV_PCA_DATA_AS_ROW, 1);
+
         mPCAdone = true;
+
+        mPCACalibrationData = runPCA(mCalibrationData);
     }
 }
 
@@ -254,10 +257,15 @@ void RegressionModel::getCalibrationPointPostPCA(int index, float &xval, float &
     yval = mPCACalibrationData.row(index).at<float>(0);
 }
 
-float RegressionModel::getFinalRegressionLine(int PCAindex)
+void RegressionModel::setRegressionGraphType(RegressionType type)
+{
+    mRegressionGraph = type;
+}
+
+float RegressionModel::getFinalRegressionLine(float PCAindex)
 {
     cv::Mat x(1,2,CV_32F,1.f);
-    float val = static_cast<int>(PCAindex);
+    float val = PCAindex;
     x.row(0).at<float>(1) = val;
     switch(mRegressionGraph)
     {
@@ -273,7 +281,7 @@ float RegressionModel::getFinalRegressionLine(int PCAindex)
     }
 }
 
-float RegressionModel::FinalComponentPCAGraph(int PCAindex)
+float RegressionModel::FinalComponentPCAGraph(float PCAindex)
 {
     //grab the two calibration points that are on either side of the given index,
     //then get y values for those from the planar model, and interpolate linearly
@@ -326,7 +334,7 @@ float RegressionModel::getDataPoint(int index, int column, std::vector<cv::Seria
         if(a == in || b == in)
             break;
     }
-    std::cout << (*pvec)[in][mTime] << " " << abs(index - (*pvec)[in][mTime]) << " ";
+    //std::cout << (*pvec)[in][mTime] << " " << abs(index - (*pvec)[in][mTime]) << " ";
     return (*pvec)[in][column];
 }
 

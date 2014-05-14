@@ -130,7 +130,7 @@ public:
     //here are the points for the calibration values that we're performing regression on
     void getCalibrationPointPostPCA(int index, float &xval, float &yval);
     //get a point to graph for the regression type mFinalRegressionType in PCA space
-    float getFinalRegressionLine(int PCAindex);
+    float getFinalRegressionLine(float PCAindex);
 
     //get statistical output for the final regression models
     std::string getFinalCalStatData();
@@ -215,7 +215,7 @@ private:
     cv::Mat stripFirstCol(cv::Mat data);
 
     //graph of planar regression in PCA space
-    float FinalComponentPCAGraph(int PCAindex);
+    float FinalComponentPCAGraph(float PCAindex);
 
     //positions of variables in input matrices
     int mRed, mGreen, mBlue, mTime;
@@ -306,9 +306,10 @@ private:
         ar & mRed & mGreen & mBlue & mTime & mComponents & mFinalComponent & mFinalPCALinear
                 & mFinalPCAQuad & mFinalPCAExponential & mCalibrationData & mRawCalibrationData & mWasEvaluation
                 & mCalibrationToGraph & mRawEvaluationData & mModelName & mFinalRegressionType & mRegressionGraph
-                & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation;
+                & mTestName & mCircleCenterX & mCircleCenterY & mCircleRadius & mHasCircle & mLastEvaluation
+                & mEvaluationSDev & mCalibrationSDev & mPCACalibrationData;
         //PCA data cannot be serialized without some wrapper, so screw it we'll just recalculate it here.
-        //This will restore mPCAdone as well.
+        //This will restore mPCAdone, as well as recreating the PCA calibration data
         createPCATransform();
     }
 

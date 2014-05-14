@@ -19,14 +19,16 @@ void PointAnalysis::evaluate(cv::Mat x)
 
     //r2 value will instead be standard dev, sigma
     float sem = getSquaredFromMean(x);
-    sem /= height;
-    mR2 = sqrt(sem);
+    mMSE = sem / height;
+    mR2 = sqrt(mMSE);
 
     mAvg = 0;
     for(int c = 0; c < height; c++)
     {
         mAvg += (x.row(c).at<float>(0) / height);
     }
+
+
 }
 
 float PointAnalysis::getEstimation(cv::Mat x)
