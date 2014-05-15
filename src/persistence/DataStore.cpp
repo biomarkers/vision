@@ -38,6 +38,7 @@ void DataStore::createTables() {
        "value REAL,"
        "exported_data TEXT,"
        "exported_message TEXT,"
+       "statistics TEXT,"
        "FOREIGN KEY(model_name) REFERENCES model(name)"
      ");";
 
@@ -105,7 +106,7 @@ ModelEntry DataStore::findModelEntryByName(std::string name) {
 std::vector<ResultEntry> DataStore::findAllResultEntries() {
   std::vector<ResultEntry> entries;
 
-  const char *q = "select id, model_name, subject_name, notes, date, value from result order by date desc";
+  const char *q = "select id, model_name, subject_name, notes, date, value, statistics from result order by date desc";
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -118,8 +119,9 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
         std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
+        std::string statistics(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 6)));
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", ""));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", "", statistics));
         break;
     }
   }
@@ -132,7 +134,7 @@ std::vector<ResultEntry> DataStore::findAllResultEntries() {
 std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelName) {
   std::vector<ResultEntry> entries;
 
-  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value from result where model_name = '%q'", modelName.c_str());
+  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value, statistics from result where model_name = '%q'", modelName.c_str());
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -145,8 +147,9 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
         std::string notes(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 3)));
         std::string date(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 4)));
         double value = sqlite3_column_double(stmt, 5);
+        std::string statistics(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 6)));
 
-        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", ""));
+        entries.push_back(ResultEntry(id, modelName, subjectName, notes, date, value, "", "", statistics));
         break;
     }
   }
@@ -158,7 +161,7 @@ std::vector<ResultEntry> DataStore::findResultsForModelName(std::string modelNam
 }
 
 ResultEntry DataStore::findResultForIdWithExportdData(int id) {
-  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value, exported_data, exported_message from result where id = '%d'", id);
+  const char *q = sqlite3_mprintf("select id, model_name, subject_name, notes, date, value, exported_data, exported_message, statistics from result where id = '%d'", id);
   sqlite3_stmt *stmt = query(q);
 
   int rc;
@@ -173,8 +176,9 @@ ResultEntry DataStore::findResultForIdWithExportdData(int id) {
         double value = sqlite3_column_double(stmt, 5);
         std::string exportedData(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 6)));
         std::string exportedMessage(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 7)));
+        std::string statistics(reinterpret_cast<char const*>(sqlite3_column_text(stmt, 8)));
 
-        ResultEntry entry = ResultEntry(id, modelName, subjectName, notes, date, value, exportedData, exportedMessage);
+        ResultEntry entry = ResultEntry(id, modelName, subjectName, notes, date, value, exportedData, exportedMessage, statistics);
 
         sqlite3_free((void *) q);
         sqlite3_finalize(stmt);
@@ -206,9 +210,9 @@ void DataStore::insertModelEntry(ModelEntry entry) {
 
 int DataStore::insertResultEntry(ResultEntry entry) {
   const char *q = sqlite3_mprintf("insert into result "
-      "(model_name, subject_name, notes, date, value, exported_data, exported_message) "
-      "values ('%q', '%q', '%q', '%q', %f, '%q', '%q')",
-      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value, entry.exportedData.c_str(), entry.exportedMessage.c_str());
+      "(model_name, subject_name, notes, date, value, exported_data, exported_message, statistics) "
+      "values ('%q', '%q', '%q', '%q', %f, '%q', '%q', '%q')",
+      entry.modelName.c_str(), entry.subjectName.c_str(), entry.notes.c_str(), entry.date.c_str(), entry.value, entry.exportedData.c_str(), entry.exportedMessage.c_str(), entry.statistics.c_str());
 
   sqlite3_stmt *stmt = query(q);
   sqlite3_step(stmt);
