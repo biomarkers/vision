@@ -388,6 +388,7 @@ std::string RegressionModel::getStatData()
     }
 
     std::stringstream stream;
+    stream << "\n";
     if(mWasEvaluation)
     {
         stream << "Red channel standard deviation  : " << mEvaluationSDev(mRed) << "\n";
@@ -400,6 +401,29 @@ std::string RegressionModel::getStatData()
         stream << "Green channel standard deviation: " << mCalibrationSDev[mCalibrationToGraph](mGreen) << "\n";
         stream << "Blue channel standard deviation : " << mCalibrationSDev[mCalibrationToGraph](mBlue) << "\n";
     }
+    stream << "\n";
+    switch(mFinalRegressionType)
+    {
+    default:
+    case PLANAR:
+        stream << "Final regression type: Planar regression\n";
+        stream << mFinalComponent->getStatString();
+        break;
+    case PCA_LINEAR:
+        stream << "Final regression type: PCA Linear regression\n";
+        stream << mFinalPCALinear->getStatString();
+        break;
+    case PCA_QUADRATIC:
+        stream << "Final regression type: PCA Quadratic regression\n";
+        stream << mFinalPCAQuad->getStatString();
+        break;
+    case PCA_EXPONENTIAL:
+        stream << "Final regression type: PCA Exponential regression\n";
+        stream << mFinalPCAExponential->getStatString();
+        break;
+    }
+
+
     data.append(stream.str());
     return data;
 }
