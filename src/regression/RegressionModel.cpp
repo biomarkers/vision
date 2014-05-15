@@ -407,19 +407,19 @@ std::string RegressionModel::getStatData()
     default:
     case PLANAR:
         stream << "Final regression type: Planar regression\n";
-        stream << mFinalComponent->getStatString();
+        stream << mFinalComponent->getStatString(false);
         break;
     case PCA_LINEAR:
         stream << "Final regression type: PCA Linear regression\n";
-        stream << mFinalPCALinear->getStatString();
+        stream << mFinalPCALinear->getStatString(false);
         break;
     case PCA_QUADRATIC:
         stream << "Final regression type: PCA Quadratic regression\n";
-        stream << mFinalPCAQuad->getStatString();
+        stream << mFinalPCAQuad->getStatString(false);
         break;
     case PCA_EXPONENTIAL:
         stream << "Final regression type: PCA Exponential regression\n";
-        stream << mFinalPCAExponential->getStatString();
+        stream << mFinalPCAExponential->getStatString(false);
         break;
     }
 

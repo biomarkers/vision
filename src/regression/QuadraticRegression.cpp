@@ -57,12 +57,15 @@ float QuadraticRegression::getWeight()
     return mLinearComponent->getWeight();
 }
 
-std::string QuadraticRegression::getStatString()
+std::string QuadraticRegression::getStatString(bool printBounds)
 {
     std::ostringstream data;
     data << "Quadratic Regression Component\n";
-    insertVar(&data);
-    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    if(printBounds)
+    {
+        insertVar(&data);
+        data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    }
     data << "y = (" << mWeights.row(0).at<float>(1) << "t + " << mWeights.row(0).at<float>(0) << ")^2 \n";
     data << "R^2 (linear) = " << mR2 << "\n";
     data << "MSE          = " << mMSE << "\n";

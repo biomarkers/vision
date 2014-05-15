@@ -18,7 +18,7 @@ public:
     virtual float getEstimation(cv::Mat x);
     virtual float getWeight();
     virtual ModelType getModelType();
-    virtual std::string getStatString();
+    virtual std::string getStatString(bool printBounds);
 
 protected:
     virtual float graphPoint(int second);

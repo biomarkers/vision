@@ -89,12 +89,15 @@ cv::Mat ExponentialRegression::logMat(cv::Mat x, float percent)
 
 }
 
-std::string ExponentialRegression::getStatString()
+std::string ExponentialRegression::getStatString(bool printBounds)
 {
     std::ostringstream data;
     data << "Exponential Regression Component\n";
-    insertVar(&data);
-    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    if(printBounds)
+    {
+        insertVar(&data);
+        data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    }
     data << "y = exp(" << mLinearComponent->mWeights.row(0).at<float>(1) << "t + " << mLinearComponent->mWeights.row(0).at<float>(0)
          << ") + " << mDisp << "\n";
     data << "R^2 (linear) = " << mR2 << "\n";

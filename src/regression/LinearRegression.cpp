@@ -60,12 +60,15 @@ float LinearRegression::getWeight()
         return 0; //should throw some error here, get around to that later
 }
 
-std::string LinearRegression::getStatString()
+std::string LinearRegression::getStatString(bool printBounds)
 {
     std::ostringstream data;
     data << "Linear Regression Component\n";
-    insertVar(&data);
-    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    if(printBounds)
+    {
+        insertVar(&data);
+        data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    }
     data << "y = ";
 
     for(int c = 1; c < mWeights.size().height; c++)

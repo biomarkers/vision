@@ -51,7 +51,7 @@ public:
     virtual float getWeight() = 0;
 
     //get stat data from last run
-    virtual std::string getStatString() = 0;
+    virtual std::string getStatString(bool printBounds = true) = 0;
 
     //enumerate the types of model components available
     enum ModelType{

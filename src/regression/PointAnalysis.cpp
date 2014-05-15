@@ -42,12 +42,15 @@ float PointAnalysis::getWeight()
     return mAvg;
 }
 
-std::string PointAnalysis::getStatString()
+std::string PointAnalysis::getStatString(bool printBounds)
 {
     std::ostringstream data;
     data << "Point Analysis\n";
-    insertVar(&data);
-    data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    if(printBounds)
+    {
+        insertVar(&data);
+        data << "channel from " << mBegin << "s to " << mEnd << "s\n";
+    }
     data << "y = " << mAvg << "\n";
     data << "Standard Deviation = " << mR2 << "\n";
     data << "Mean Squared Error = " << mMSE << "\n";
